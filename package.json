@@ -1,0 +1,27 @@
+{
+  "name": "vsm-autocomplete",
+  "version": "0.0.1",
+  "description": "Webcomponent for ontology lookup based on a vsm-dictionary",
+  "main": "src/Autocomplete.js",
+  "scripts": {
+    "test": "mocha \"src/**/*.test.js\" --check-leaks"
+  },
+  "keywords": [
+    "autocomplete",
+    "VSM",
+    "dictionary",
+    "ontology",
+    "identifier",
+    "term"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vsmjs/vsm-autocomplete"
+  },
+  "author": "Steven Vercruysse (http://stcruy.com)",
+  "license": "CC-BY-NC-SA-4.0",
+  "bugs": {
+    "url": "https://github.com/vsmjs/vsm-autocomplete/issues"
+  },
+  "homepage": "https://github.com/vsmjs/vsm-autocomplete#readme"
+}
