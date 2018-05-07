@@ -1,0 +1,32 @@
+/*
+This 'CSS-skin' makes vsm-autocomplete components larger.
+
+To use it, include the following tag _in_ the page's <body>, _after_ the
+element that Vue is activated on (e.g. after '<div #app>...</div>') :
+
+  <link rel="stylesheet" href="vsm-autocomplete-large.css">
+
+*/
+.vsm-autocomplete .input {
+  font-size: 16px;
+}
+.vsm-autocomplete .list {
+  margin: 4px 0 0 -5px;
+  font-size: 13px;
+  line-height: 16.5px;
+}
+.vsm-autocomplete .item:not(.item-type-literal) {
+  padding: 3px 6px 4px 5px;
+}
+.vsm-autocomplete .item.item-type-literal {
+  padding-left: 12px;
+}
+.vsm-autocomplete .spinner {
+  width: 11px;
+  height: 11px;
+  margin-top: 10px;
+  border-width: 2.5px;
+}
+.vsm-autocomplete .spinner.list-closed {
+  margin-top: 7px;
+}

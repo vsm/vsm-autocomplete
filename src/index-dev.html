@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+
+  <title>vsm-autocomplete</title>
+
+  <style>
+    body { font-family: sans-serif;  font-size: 14px;  margin: 0; }
+    a, a:visited { color: #FF0000; }
+    #app { padding: 20px 0 18px 50px;  background-color: #FFEEDD;  min-height: 180px; }
+    [v-cloak] { display: none; }
+  </style>
+
+  <!-- For faster reloads, we include Vue.js in the webpack bundle, during dev.
+  <script src="https://unpkg.com/vue"></script> -->
+</head>
+
+
+<body>
+
+  <div id="app" v-cloak>
+    <div class="reporter">{{ report || '&nbsp;' }}</div>
+    <vsm-autocomplete
+      :vsm-dictionary="vsmDictionary"
+      :autofocus="true"
+      :input-placeholder="inputPlaceholder"
+      :query-options="queryOptions"
+      :max-string-lengths="maxStringLengths"
+      :item-literal-content="itemLiteralContent"
+      initial-value="tes"
+      @focus="onFocus"
+      @blur="onBlur"
+      @input-change="onInputChange"
+      @key-esc="onKeyEsc"
+      @key-bksp="onKeyBksp"
+      @key-tab="onKeyTab"
+      @double-click="onDoubleClick"
+      @list-open="onListOpen"
+      @list-close="onListClose"
+      @item-active-change="onItemActiveChange"
+      @item-select="onItemSelect"
+      @item-literal-select="onItemLiteralSelect"
+    >
+    </vsm-autocomplete>
+  </div>
+
+  <style>
+    .reporter {
+      color: #bbb;
+      height: 16px;
+      max-width: 350px;
+      font-size: 13px;
+      margin: 0 0 1px 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: right;
+      direction: rtl;
+    }
+
+    /* One can to apply CSS-styling to/around a vsm-autocomplete, like: */
+    .vsm-autocomplete {
+      width: 200px;
+      padding: 0 4px 0 0;
+      background-color: #f4f4f4;
+      border: 1px solid #ddd;
+    }
+
+    /* And one can change vsm-autocomplete subcomponents' style. For example,
+       this makes a non-active item-literal's text dark-grey: * /
+    .vsm-autocomplete .item:not(.item-state-active).item-type-literal {
+      color: #333;
+    }  /* */
+  </style>
+
+  <!-- One can also override vsm-autocomplete's CSS-styles,
+       by declaring CSS _after_ the Vue-activated '#app' div.
+       E.g. make it larger with this:  (add/remove a '>' char to toggle) :
+  --
+  <link rel="stylesheet" href="vsm-autocomplete-large.css">  <!-- -->
+
+</body>
+</html>
