@@ -335,8 +335,7 @@ function createData() {
 
         f_aci: function(item, strs, searchStr, maxStringLengths, dictInfo) {
           var synonyms = item.terms && item.terms.length > 1 ?
-            item.terms.map(function(termObj) {return termObj.str}).join(', ') :
-            '';
+            item.terms.map(termObj => termObj.str).join(', ') : '';
 
           return Object.assign(strs, {
             str:
