@@ -91,7 +91,7 @@ export default {
   },
 
 
-  data: function() { return ({
+  data: function() { return {
     inputStr: this.initialValue, // (1/3): This holds TheInput's current content.
     activeSearchStr: false,  // (3/3): This resulted in currently shown TheList.
     loadingFixedTerms: 0,
@@ -101,7 +101,7 @@ export default {
     matches: [],   // The list of currently shown match-objects.
     dictInfos: {}, // DictID-key-based Map of dictInfos that appear in `matches`.
     activeIndex: 0
-  }); },
+  }; },
 
 
   computed: {
