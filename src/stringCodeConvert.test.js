@@ -1,14 +1,14 @@
 import stringCodeConvert from './stringCodeConvert.js';
 
 
-describe('stringCodeConvert()', function() {
+describe('stringCodeConvert()', () => {
 
   it('converts both \'\\beta\' and \'/beta\' in a string to \'β\'', () => {
     stringCodeConvert('\\beta-abc-/beta').should.equal('β-abc-β');
   });
 
   it('converts both \'/Gamma\' and \'/GAMMA\' to \'Γ\', ' +
-    'but \'/gamma\' to \'γ\'', () => {
+     'but \'/gamma\' to \'γ\'', () => {
     stringCodeConvert('/Gamma-/GAMMA-/gamma').should.equal('Γ-Γ-γ');
   });
 

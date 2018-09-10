@@ -1,4 +1,4 @@
-<template functional>
+<template>
   <transition name="fade">
     <div class="spinner"/>
   </transition>
@@ -6,8 +6,12 @@
 
 
 <script>
+// Note: we use `<template>`, not `<template functional>`, otherwise the
+// CSS fade-transitions would not work.
+
 export default {
-  name: 'TheSpinner',
+  name: 'TheSpinner'
+
 };
 </script>
 
@@ -31,9 +35,10 @@ export default {
   }
   .fade-enter-active {
     transition: opacity 0.5s;
+    transition-delay: 10ms;
   }
   .fade-enter,
-  .fade-leave,  /* -> This set it to 0 immediately at 'leave'-start */
+  .fade-leave,  /* -> This sets it to 0 immediately at 'leave'-start */
   .fade-leave-to {
     opacity: 0;
   }

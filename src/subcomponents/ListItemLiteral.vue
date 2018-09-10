@@ -4,7 +4,7 @@
     @mousemove="onHover"
     @mousedown.left.exact.prevent="onMousedown"
     @click.left.exact="onClick"
-    v-html="itemLiteralContent(searchStrTrimmed)"
+    v-html="sanitize(itemLiteralContent(searchStrTrimmed))"
   />
   <div
     v-else
@@ -19,6 +19,7 @@
 
 <script>
 import stringTrim from './stringTrim.js';
+import sanitizeHtml from './sanitizeHtml.js';
 
 
 export default {
@@ -52,7 +53,9 @@ export default {
   methods: {
     onHover()     { this.$emit('hover', this.index) },
     onMousedown() { this.$emit('hover', this.index) },  // Ensure 'hover' b4 clk.
-    onClick()     { this.$emit('click', this.index) }
+    onClick()     { this.$emit('click', this.index) },
+
+    sanitize(str) { return sanitizeHtml(str) }  // Enable template to use this.
   }
 };
 </script>

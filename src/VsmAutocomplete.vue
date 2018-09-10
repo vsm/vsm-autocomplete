@@ -1,6 +1,7 @@
 <template>
   <div class="vsm-autocomplete">
     <the-input
+      ref="theInput"
       v-model="inputStr"
       :placeholder="placeholder"
       :autofocus="autofocus"
@@ -73,7 +74,7 @@ export default {
     queryOptions: {
       type: Object,
       default: () => ({
-        perPage: 20  // (includes S/T-type items only, not N/R/F/G/literal ones).
+        perPage: 20  // (counts S/T-type items only, not N/R/F/G/literal ones).
       })
     },
     maxStringLengths: {  // Limits the length of matches's `str` and `descr`..
@@ -93,7 +94,7 @@ export default {
   data: function() { return ({
     inputStr: this.initialValue, // (1/3): This holds TheInput's current content.
     activeSearchStr: false,  // (3/3): This resulted in currently shown TheList.
-    fixedTermsLoaded: false,
+    loadingFixedTerms: 0,
     showError: false,
     mayListOpen: false,  // Is `true` when loading, before receiving list-data.
     listClosedHard: false,  // Helps keep list closed on refocus after Esc-press.
@@ -148,8 +149,8 @@ export default {
      *   item-literal as a String, and a normal item as an Object.
      * + But Vue has trouble with deep-watching changes on these three.
      * + So, we represent 'no item' as `false`, and the other two as a String.
-     *   + The item-literal is represented by '-' + the active search-string.
-     *     + The '-' helps to distinguish it from a normal items String.
+     *   + The item-literal is represented by '-' + the search-string.
+     *     + The '-' helps to distinguish it from a normal-item's String.
      *   + A normal item is repr. by its list-index + the matchObj's id + str.
      *     + The list-index enables us to easily access the full match-object,
      *       in the `watch` below.
@@ -163,7 +164,8 @@ export default {
         return false;  // -> No active item.
       }
       else if (this.hasItemLiteral && this.activeIndex == this.listLength - 1) {
-        return '-' + this.activeSearchStr;  // -> The item-literal.
+        // Note: `searchStr` (not `activeSe..`) so the tests flash no old result.
+        return '-' + this.searchStr;  // -> The item-literal.
       }
       else {  // -> A normal item.
         var match = this.matches[this.activeIndex];
@@ -172,21 +174,35 @@ export default {
     },
 
     sanitizedMaxStringLengths() {  // Fills in missing `maxStringLengths`-props.
-      var max = Number.POSITIVE_INFINITY;
       return Object.assign(
-        { str: max, strAndDescr: max }, this.maxStringLengths);
-    },
+        { str: Number.MAX_VALUE, strAndDescr: Number.MAX_VALUE },
+        this.maxStringLengths );
+    }
   },
 
 
   watch: {
+    vsmDictionary: function() {
+      this.resetComponent();
+    },
+
+    initialValue: function() {
+      this.inputStr = this.initialValue;
+    },
+
+    queryOptions: function() {
+      this.resetComponent();
+    },
+
     searchStr: function() {  // A change-watcher is more precise..
       this.onInputChange();  // ..than listening to TheInput's '@input' event.
       this.$emit('input-change', this.searchStr);  // Also note: not `inputStr`.
     },
+
     isListOpen: function(value) {
       this.$emit('list-' + (value ? 'open' : 'close'));
     },
+
     activeItemKey: function(key) {
       // See the computed property's comment (above), for what different values
       // of `key` mean.  Here we translate this `key` in order to emit values:
@@ -202,20 +218,32 @@ export default {
   },
 
 
+  created: function() {
+    this.resetComponent();
+  },
+
+
   mounted: function() {
-    this.loadFixedTermsMaybe(
-      () => {
-        // Ignore any fixed-term loading errors. So no `err` argument.
-        // Because they would be available as normal match-objects anyway.
-        ///DEBUG//console.log('FT');
-        this.fixedTermsLoaded = true;
-        this.requestListDataMaybe();  // In case we already need to show TheList.
-      }
-    );
+    this.$emit('input-change', this.searchStr);
   },
 
 
   methods: {
+    resetComponent() {
+      this.resetList();
+      this.loadingFixedTerms++;  // Not true/false: this func may be called > 1x.
+      this.loadFixedTermsMaybe(
+        () => {
+          // When done, ignore any fixed-term loading errors. So no `err` arg.
+          // Because they would be available as normal match-objects anyway.
+          ///DEBUG//console.log('* loadFixedTermsMaybe() finished');
+          if (--this.loadingFixedTerms == 0) {
+            this.requestListDataMaybe();  // For if we already need show TheList.
+          }
+        }
+      );
+    },
+
     loadFixedTermsMaybe(cb) {  // Preloads data for fixedTerms, if any are given.
       if (this.queryOptions.idts) {
         this.vsmDictionary.loadFixedTerms(
@@ -233,13 +261,11 @@ export default {
       this.inputStr = stringCodeConvert(this.inputStr);
     },
 
-    onInputFocus() {  // Opens the list on initial focus; but not later, after..
-      this.openList(false);  // .. user-interaction had already closed the list.
+    onInputFocus() { // Opens the list on focus, but not after some user action..
+      this.openList(false);               // ..manually(='hard')-closed the list.
       this.$emit('focus');
     },
     onInputBlur() {
-      ///// Prevent list-open after initial focus, if blurred before gotten data.
-      ///if (!this.isListOpen) this.closeList(false);
       this.closeList(false);
       this.$emit('blur');
     },
@@ -254,9 +280,11 @@ export default {
     closeList(closeHard = true) {
       this.mayListOpen = false;
       if (closeHard)  this.listClosedHard = true;
-    },
+      if (this.isListStale)  this.resetList(); // Make that no action or event..
+    },                                 // ..can immediately reopen a stale list.
     resetList() {
       this.matches = [];
+      this.dictInfos = {};
       this.activeIndex = 0;
       this.activeSearchStr = false;
     },
@@ -274,55 +302,59 @@ export default {
      *    the TheInput's `searchStr` changed.
      */
     requestListDataMaybe() {
-      if (this.fixedTermsLoaded &&  // -> Ensures that fixedTerms are available.
+      if (!this.loadingFixedTerms && // -> Ensures that fixedTerms are preloaded.
           this.mayListOpen &&   // -> Only requests data when the user needs it.
-          this.isListStale  // -> True at mount and on input.
+          this.isListStale  // -> True at mount and after a changed searchStr.
       ) {
         this.requestListData();
       }
     },
 
     requestListData() {
-      ///DEBUG//console.log(this.searchStr, '->');
+      ///DEBUG//console.log(`* requestListData('${this.searchStr}') -> ...`);
       this.vsmDictionary.getMatchesForString(
         this.searchStr,
         this.queryOptions,
-        this.newMatchesArrived.bind(this, this.searchStr)
+        this.newMatchesArrived.bind(this, this.searchStr, this.queryOptions)
       );
     },
 
-    newMatchesArrived(queryStr, err, res) {
-      // Don't show matches that came in too late.
-      if (queryStr !== this.searchStr  ||  !this.mayListOpen)  return;
-      ///DEBUG//console.log(queryStr, this.searchStr);
+    newMatchesArrived(queryStr, queryOpt, err, res) {
+      // If data arrives late, e.g. after the query-str/-options has changed: do
+      // not query for associated dictInfos too, but discard this stale result.
+      if (queryStr !== this.searchStr  ||  queryOpt !== this.queryOptions  ||
+        !this.mayListOpen)  return;
 
       var matches = err ? [] : res.items;
-      var next = this.newDictInfosArrived.bind(this, queryStr, matches);
+      var next = this.newDictInfosArrived.bind(this, queryStr, queryOpt, matches);
+      ///DEBUG//console.log(`* newMatchesArrived() for '${this.searchStr}': ${matches,length}`);
 
       if (err)  return next(err);  // On error, skip getting DictInfos.
 
-      // 'Step 2': Get `dictInfos` for all dictIDs that appear in the match-objs.
+      // 'Step 2': Get `dictInfos` for new dictIDs that appear in the match-objs.
+      // Note: we requery even those we already got, because cache-handling is
+      //       is not this module's responsibility.
       var dictIDs = [...new Set(matches.map(m => m.dictID))];  // Deduplicate.
       if (!dictIDs.length)  return next(null, { items: [] });
+
       this.vsmDictionary.getDictInfos({ filter: { id: dictIDs } }, next);
     },
 
-    newDictInfosArrived(queryStr, matches, err, res) {
-      if (queryStr !== this.searchStr  ||  !this.mayListOpen)  return;
-      ///DEBUG//console.log(queryStr, matches.length);
+    newDictInfosArrived(queryStr, queryOpt, matches, err, res) {
+      // Discard data that came in too late.  (But do use it TheList is closed).
+      if (queryStr !== this.searchStr || queryOpt !== this.queryOptions)  return;
+      ///DEBUG//console.log(`* newDictInfosArrived() for '${this.searchStr}': ${matches.length}`);
+
+      this.showError = !!err;
 
       if (!err) {
-        // - We convert the result Array to an easier-to-use,
-        //   dictID-key based Map.
-        // - But first, add any extra dictInfos from VsmDictionary.
-        //   (The child class's results may still override these afterwards).
-        this.dictInfos = {};
-        [this.vsmDictionary.getExtraDictInfos(), res.items] .forEach(arr => {
-          this.dictInfos = arr.reduce((dictInfos, dictInfo) => {
-            dictInfos[dictInfo.id] = dictInfo;
-            return dictInfos;
-          }, this.dictInfos);
-        });
+        // - Convert the result Array to an easier-to-use, dictID-key based Map.
+        // - But first add any 'extra' dictInfos from VsmDictionary (the parent
+        //   class). (Child-class results may still override these afterwards).
+        var map = {};
+        [this.vsmDictionary.getExtraDictInfos(), res.items] .forEach(arr =>
+          arr.forEach( dictInfo => map[dictInfo.id] = dictInfo ));
+        this.dictInfos = map;
       }
 
       // Reset activeIndex, but only if we got matches for a different searchStr
@@ -331,28 +363,26 @@ export default {
 
       this.matches = err ? [] : matches;  // This updates TheList.
       this.activeSearchStr = queryStr;    // This stops TheSpinner.
+    },
 
-      this.showError = !!err;
+    openFreshList() {  // Opens TheList if not stale; else resets it and makes..
+      if (this.isListStale)  this.resetList();  // ..it open when results arrive.
+      this.openList();
     },
 
     onKeyUp() {
-      if (this.isListOpen) {
-        if (!this.isListStale) {
-          this.activeIndex--;
-          if (this.activeIndex < 0)  this.activeIndex = this.listLength - 1;
-        }
+      if (!this.isListOpen)  this.openFreshList();
+      else if (!this.isListStale) {
+        this.activeIndex = (this.activeIndex || this.listLength) - 1;
       }
-      this.openList();
     },
 
     onKeyDown() {
-      if (this.isListOpen) {
-        if (!this.isListStale) {
-          this.activeIndex++;
-          if (this.activeIndex >= this.listLength)  this.activeIndex = 0;
-        }
+      if (!this.isListOpen)  this.openFreshList();
+      else if (!this.isListStale) {
+        this.activeIndex =
+          this.activeIndex >= this.listLength - 1 ? 0 : this.activeIndex + 1;
       }
-      this.openList();
     },
 
     onKeyEsc() {
@@ -363,14 +393,18 @@ export default {
     },
 
     onKeyEnter() {
-      if (!this.isListOpen)  return this.openList();
-      this.selectItem(this.activeIndex);
+      if (this.isListOpen)  this.selectItem(this.activeIndex);
+      else this.openFreshList();
     },
 
     onKeyBksp() {
+      // If bksp on a whitespace-only input, with cursor at start: make & then..
+      if (this.inputStr && !this.searchStr &&            // ..treat it as empty.
+        !this.$refs.theInput.input.selectionStart)  this.inputStr = '';
+
       if (!this.inputStr) {
         this.$emit('key-bksp');
-        this.closeList();
+        this.closeList();  // Close list on Esc on already-empty input.
       }
     },
 
@@ -389,7 +423,7 @@ export default {
     },
     onInputDblclick() {
       this.closeList();
-      this.$emit('double-click');
+      this.$emit('dblclick');
     },
 
     onItemHover(index) {

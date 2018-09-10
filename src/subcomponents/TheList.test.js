@@ -1,8 +1,10 @@
-import { shallow, mount } from '@vue/test-utils';
 import TheList from './TheList.vue';
+// Some extra, global variables are defined in 'test-setup.js'.
 
 
 describe('sub/TheList', () => {
+
+  // Prepare default values for the three required props, for our tests:
 
   const dictInfos = {
     D01:  { id: 'D01', name: 'Dict.1' },
@@ -18,11 +20,10 @@ describe('sub/TheList', () => {
     { id: 'id-2',  dictID: 'D01', str: 'cde', descr: 'Abc', type: 'T' },
   ];
 
-  const maxStringLengths =
-    { str: Number.POSITIVE_INFINITY, strAndDescr: Number.POSITIVE_INFINITY };
+  const maxStringLengths = {str: Number.MAX_VALUE, strAndDescr: Number.MAX_VALUE};
 
 
-  const make = (props, deeply = false) => (deeply ? mount : shallow) (
+  const make = props => mount(
     TheList,
     { propsData: Object.assign(
       { items, maxStringLengths, dictInfos },
@@ -30,13 +31,9 @@ describe('sub/TheList', () => {
     ) }
   );
 
-  const fire = function(elem, type, options) {
-    elem.dispatchEvent( Object.assign(new CustomEvent(type), options) );
-  };
 
-
-  it('initializes', () => {
-    var wrap = shallow(TheList, {
+  it('initializes, when getting only the required props', () => {
+    var wrap = shallowMount(TheList, {
       propsData: {
         /// searchStr: '',
         items,
@@ -51,72 +48,164 @@ describe('sub/TheList', () => {
     wrap.vm.indexLastFixedItem.should.equal(3);
   });
 
-  it('initializes, and makes the viewmodel work', () => {
+
+  it('initializes, by default without a ListItemLiteral', () => {
     var wrap = make({ activeIndex: 2 });
-    wrap.vm.indexLastFixedItem.should.equal(3);
-    wrap.vm.isActive(2).should.equal(true);
-    wrap.vm.isActive(3).should.equal(false);
-    (!!wrap.find('.item-type-literal').element)  // There should be..
-      .should.equal(false);                      // ..no item-literal.
+
+    // There should be no item-literal.
+    expect(wrap.find('.item-type-literal').element).to.equal(undefined);
+  });
+
+  it('can add a ListItemLiteral', () => {
+    var wrap = make({ activeIndex: 2, hasItemLiteral: true });
+    ///H(wrap);
+
+    // In this test, an item-literal does exists.
+    wrap.find('.item-type-literal').element.should.not.equal(undefined);
   });
 
 
-  it('can add an itemLiteral', () => {
+  it('makes all list-items unselectable', () => {
+    var wrap = make({ hasItemLiteral: true });
+    var wraps = wrap.findAll('.item');
+
+    wraps.wrappers.forEach(w => {
+      w.attributes().unselectable.should.not.equal(undefined);
+    });
+  });
+
+
+  it('passes `maxStringLengths` to all ListItems', () => {
+    var wrap = make({  maxStringLengths: {str: 2} });
+    var wraps = wrap.findAll('.item');
+
+    wraps.wrappers.forEach(w => {
+      (w.find('.item-part-str').text().length <= 2) .should.equal(true);
+    });
+  });
+
+
+  it('passes `maxStringLengths` and `searchStr` to ListItemLiteral', () => {
     var wrap = make(
-      { activeIndex: 2, hasItemLiteral: true },
-      true  // Arg 2 == `true` => makes subcomp.s too.
-    );
-    (!!wrap.find('.item-type-literal').element)  // Now, an item-literal..
-      .should.equal(true);                       // ..exists.
+      { hasItemLiteral: true, maxStringLengths: {str: 4}, searchStr: '12345' });
+
+    ///H(wrap.find('.item-type-literal').text());
+    wrap.find('.item-type-literal').text().startsWith('123…')
+      .should.equal(true);
+  });
+
+
+  it('passes all attributes that `f_aci()` needs, to ListItem: ' +
+     '`searchStr`, `item`, `dictInfo`, `vsmDictionary`, etc', () => {
+    var spyData = {};
+
+    var item4 = items[4];  // Use just one of the `items`.
+    var dictInfos2 = {  // Link it to a dictInfo with a `f_aci()` that spies.
+      D01:  {
+        id: 'D01',
+        name: 'Dict.1',
+        f_aci: (item, strs, searchStr, msLengths, dictInfo, vsmDict) => {
+          spyData = { item, /*strs,*/ searchStr, msLengths, dictInfo, vsmDict };
+          return strs;
+        }
+      }
+    };
+    var msLengths2 = Object.assign(maxStringLengths, { str: 4 });
+    var vsmDict2 = { x: 'test' };
+
+    var wrap = make(
+      { items: [item4],
+        dictInfos: dictInfos2,
+        maxStringLengths: msLengths2,
+        searchStr: 'ab',
+        vsmDictionary: vsmDict2 });
+
+    wrap.findAll('.item').length.should.equal(1);  // Sanity test.
+    spyData.should.deep.equal({
+      item: item4,
+      searchStr: 'ab',
+      msLengths: msLengths2,
+      dictInfo: dictInfos2[item4.dictID],
+      vsmDict: vsmDict2
+    });
   });
 
 
   it('for a click / hover on a ListItem: ' +
      'emits a item-click/hover event, with the `index`', () => {
-    var wrap = make({ activeIndex: 2 }, true);
+    var wrap = make({ activeIndex: 2 });
     var listItem = wrap.find('.item-state-active'); // Let's use the active item.
-    fire(listItem.element, 'click', { button: 0 });
-    fire(listItem.element, 'mousemove');  // Not 'hover'. 'Mousemove' on subcomp!
+    listItem.trigger('click', { button: 0 });
+    listItem.trigger('mousemove');  // Not 'hover'. 'Mousemove' on subcomp!
     wrap.emitted('item-click')[0][0].should.equal(2);
     wrap.emitted('item-hover')[0][0].should.equal(2);
   });
 
 
   it('does that too, for the itemLiteral', () => {
-    var wrap = make({ activeIndex: 2, hasItemLiteral: true }, true);
+    var wrap = make({ activeIndex: 2, hasItemLiteral: true });
     var listItem = wrap.find('.item-type-literal'); // Now, use the item-literal.
-    fire(listItem.element, 'click', { button: 0 });
-    fire(listItem.element, 'mousemove');
+    listItem.trigger('click', { button: 0 });
+    listItem.trigger('mousemove');
     wrap.emitted('item-click')[0][0].should.equal(6);
     wrap.emitted('item-hover')[0][0].should.equal(6);
   });
 
 
   it('adds all CSS classes correctly to its ListItems', () => {
-    // 1: Get all items. 2: Get each one's 'wrapper''s attributes' class-string.
-    var wraps = make({ activeIndex: 4, hasItemLiteral: true }, true)
-      .findAll('.item');
-    for (var i = 0, clss = []; i <= items.length; i++) {
-      clss.push(wraps.at(i) .attributes().class);
+    // Note: we don't test internal state (like `indexLastFixedItem == 3`), as
+    // it may change after refactoring.  We test the state's effect on the HTML.
+
+    var wrap = make({ activeIndex: 4, hasItemLiteral: true });
+
+    ///var wraps = wrap.findAll('.list > div');
+    ///wraps.wrappers.forEach(w => w.classes().should.contain('item'));
+
+    var wraps = wrap.findAll('.item'); // All items, plus item-literal, should..
+    wraps.length.should.equal(items.length + 1);     // ..result in a list-item.
+
+    wraps.at(0).classes().should.contain('item-pos-first');
+    wraps.at(0).classes().should.contain('item-pos-first');
+    wraps.at(0).classes().should.contain('item-type-number');
+
+    wraps.at(1).classes().should.contain('item-type-ref');
+
+    wraps.at(2).classes().should.contain('item-type-fixed');
+
+    wraps.at(3).classes().should.contain('item-type-fixed');
+    wraps.at(3).classes().should.contain('item-type-fixed-last');
+
+    wraps.at(4).classes().should.contain('item-state-active');
+    for (let i = 0; i < wraps.length; i++) {
+      if (i != 4)  wraps.at(i).classes().should.not.include('item-state-active');
     }
 
-    clss.forEach(s => s.should.contain('item '));
+    wraps.at(5).classes().should.contain('item-pos-last');
 
-    clss[0].should.contain('item-pos-first');
-    clss[0].should.contain('item-type-number');
-
-    clss[1].should.contain('item-type-ref');
-
-    clss[2].should.contain('item-type-fixed');
-
-    clss[3].should.contain('item-type-fixed');
-    clss[3].should.contain('item-type-fixed-last');
-
-    clss[4].should.contain('item-state-active');
-
-    clss[5].should.contain('item-pos-last');
-
-    clss[6].should.contain('item-type-literal');
+    wraps.at(6).classes().should.contain('item-type-literal');
   });
 
+
+  it('also adds CSS classes correctly to an active ListItemLiteral', () => {
+    var wrap = make({ activeIndex: 6, hasItemLiteral: true });
+
+    wrap.find('.item-type-literal')
+      .classes().should.contain('item-state-active');
+  });
+
+
+  it('passes a `itemLiteralContent` attribute to a ListItemLiteral', () => {
+    var template = '<div title="test">Test: ### ▸</div>';
+
+    var wrap = make({
+      items: [],             // } Only create one list-item: a ListItemLiteral.
+      hasItemLiteral: true,  // }
+      searchStr: '12345678',
+      maxStringLengths: { str: 5 },
+      itemLiteralContent: trimmedStr => template.replace('###', trimmedStr)
+    });
+
+    wrap.find('.item').html()
+      .should.contain('<div title="test">Test: 1234… ▸</div>');
+  });
 });

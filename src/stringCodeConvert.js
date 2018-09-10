@@ -10,6 +10,7 @@ var codes = [
   ['∏','prod'], ['∑','sum'], ['µ','micro'],
 
   /*
+  Maybe for future inclusion, although it would enlarge the minified code:
   ['à','agrave'], ['á','aacute'], ['â','acirc'], ['ã','atilde'], ['ä','auml'],
   ['å','aring'], ['æ','aelig'], ['ç','ccedil'], ['è','egrave'], ['é','eacute'],
   ['ê','ecirc'], ['ë','euml'], ['ì','igrave'], ['í','iacute'], ['î','icirc'],

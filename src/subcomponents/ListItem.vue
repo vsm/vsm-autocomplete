@@ -33,13 +33,14 @@
 <script>
 import stringStyleHtml from 'string-style-html';
 import stringTrim from './stringTrim.js';
+import sanitizeHtml from './sanitizeHtml.js';
 
 
 export default {
   name: 'ListItem',
 
   props: {
-    searchStr: {  // Only used by custom `dictInfo.f_aci()` functions.
+    searchStr: {  // Only used by a custom `dictInfo.f_aci()` function.
       type: String,
       default: ''
     },
@@ -67,16 +68,17 @@ export default {
 
   computed: {
     isNumberItem() {
-      if (this.item.type == 'N')  return true;
-
       // Note: a number-string could also be returned as a non-'N'-type match,
       // if found in an existing subdictionary instead of being generated
       // by the VsmDictionary parent class.
-      return this.vsmDictionary && this.vsmDictionary.numberMatchConfig &&
-        this.item.dictID == this.vsmDictionary.numberMatchConfig.dictID;
+      return this.item.type == 'N'  ||  (
+        this.vsmDictionary  &&  this.vsmDictionary.numberMatchConfig  &&
+        this.item.dictID == this.vsmDictionary.numberMatchConfig.dictID
+      );
     },
 
     strs() {
+      // 1.) `str`.
       var strOrig = this.item.str || '';
 
       var str =  stringStyleHtml(
@@ -88,6 +90,7 @@ export default {
 
       var strTrimmedLen = Math.min(strOrig.length, this.maxStringLengths.str);
 
+      // 2.) `descr`.
       var descrOrig = this.item.descr || '';
 
       var descr =  stringTrim(descrOrig,
@@ -98,6 +101,7 @@ export default {
         this.maxStringLengths.strAndDescr;
       var descrTitle = descrOrigTooLong ? descrOrig : '';
 
+      // 3.) `info`.
       var info =
         this.isNumberItem ? this.item.id :
           this.item.type == 'R' ? '' :
@@ -114,7 +118,7 @@ export default {
         (this.dictInfo && this.dictInfo.name ?
           ` in ${ this.dictInfo.name }` : '');
 
-      // All props are guaranteed Strings, never false/undefined.
+      // 4.) `str`, `descr`, `info`, and `extra`; and their title-attributes.
       var strs = {
         str, strTitle,
         descr, descrTitle,
@@ -123,20 +127,26 @@ export default {
       };
 
       if (this.dictInfo && this.dictInfo.f_aci) {
+        // Note: all `strs`-props are guaranteed Strings, never false/undefined.
         strs = this.dictInfo.f_aci(
           this.item, strs, this.searchStr, this.maxStringLengths, this.dictInfo,
           this.vsmDictionary);
       }
 
-      if (!strs.strTitle)  strs.strTitle = false;      // Now we can make some..
-      if (!strs.descrTitle)  strs.descrTitle = false;  // ..`false`, so Vue..
-      if (!strs.infoTitle)  strs.infoTitle = false;  // ..won't add empty titles.
+      // Now we can make empty title-attrs `false`, so Vue won't add them.
+      // Note: _Vue_ already sanitizes `:title`-attrs, by HTML-encoding quotes.
+      if (!strs.strTitle  )  strs.strTitle   = false;
+      if (!strs.descrTitle)  strs.descrTitle = false;
+      if (!strs.infoTitle )  strs.infoTitle  = false;
 
+      strs.str   = sanitizeHtml(strs.str);
       strs.descr = !strs.descr ? false :
-        this.isNumberItem ||  this.item.type === 'R' ?
-          '[' + strs.descr + ']' : '(' + strs.descr + ')';
-      strs.info = !strs.info ? false : ( '(' + strs.info + ')' );
-      if (!strs.extra)  strs.extra = false;
+        sanitizeHtml(
+          this.isNumberItem ||  this.item.type == 'R' ?
+            '[' + strs.descr + ']' : '(' + strs.descr + ')'
+        );
+      strs.info  = !strs.info  ? false : sanitizeHtml('(' + strs.info + ')');
+      strs.extra = !strs.extra ? false : sanitizeHtml(strs.extra);
 
       return strs;
     }
@@ -148,6 +158,7 @@ export default {
     onClick()     { this.$emit('click', this.index) }
   }
 };
+
 </script>
 
 

@@ -8,7 +8,6 @@
     spellcheck="false"
     @focus="onFocus"
     @blur="onBlur"
-    @input="onInput"
     @keydown.up.exact="onKeyUp"
     @keydown.down.exact="onKeyDown"
     @keydown.esc.exact.prevent="onKeyEsc"
@@ -30,20 +29,22 @@
 
   But because this 'TheInput' component adds a layer in between them,
   (i.e.: VsmAutocomplete <--> TheInput <--> <input>),
-  this TheInput has mediate and connect two two-way-bindings.
+  this TheInput has to mediate by connecting these two two-way-bindings:
 
   - TheInput uses the variable `str`, bound to the <input>'s `v-model`,
     which is already two-way bound. So that's OK.
-  - It also uses the prop `value`, which is linked to the `v-model` that the
-    parent component uses for two-way communication with this TheInput component.
+  - It also uses the prop `value`, which is the default prop that is linked to
+    the `v-model` that the parent component uses for two-way communication
+    with this TheInput component.
     + (Note that props on TheInput shouldn't be changed from inside TheInput, so
       we can't directly use `value` for the input v-model. Or Vue gives warnings).
 
   So we manage the `value` <--> `str` connection explicitly:
   - in `data`:    prop `value`'s initial value goes into `str`;
-  - in `watch`:   if prop `value` would change, update `str` too.
-  - in `methods`: if `str` changes (which is notified by `@input="onInput"`),
-    we $emit an 'input' event to make the parent's v-model's `value` change too.
+  - in `watch`:   if prop `value` would ever change, then we update `str` too.
+  - in `methods`: if `str` changes, we `$emit()` an 'input' event,
+    to make the parent's v-model's `value` get automatically updated
+    with the input's value too.
 */
 export default {
   name: 'TheInput',
@@ -69,15 +70,25 @@ export default {
 
   data: function() {
     return ({
-      realPlaceholder: this.placeholder, // `false`(=>hide) for a focused input.
       input: null,
-      str: this.value  // This places an initial string in '<input>'.
+      str: this.value,  // This places an initial string in '<input>'.
+      isFocused: false
     });
+  },
+
+  computed: {
+    realPlaceholder() {  // Returns `false`(=hidden) for a focused input.
+      return !this.isFocused && this.placeholder;
+    }
   },
 
   watch: {
     value: function(newVal) {
       this.str = newVal;
+    },
+
+    str: function(newVal) {
+      this.$emit('input', newVal);  // Makes the component work with v-model.
     }
   },
 
@@ -88,23 +99,18 @@ export default {
   methods: {
     onFocus() {
       this.cursorToEnd();
-      this.realPlaceholder = false;
+      this.isFocused = true;
       this.$emit('focus');
     },
 
     onBlur() {
-      this.realPlaceholder = this.placeholder;
+      this.isFocused = false;
       this.$emit('blur');
     },
 
-    onInput() {  // Makes the component work with v-model.
-      this.$emit('input', this.input.value);
-    },
-
     cursorToEnd() {
-      setTimeout(() => {
-        this.input.selectionStart = this.input.selectionEnd =
-          this.input.value.length;  // Un-select the input text.
+      setTimeout(() => {                          // Un-select the input text:
+        this.input.selectionStart = this.input.selectionEnd = this.str.length;
       }, 0);  // `setTimeout` makes it work with Tab / Shift-Tab too.
     },
 
@@ -118,12 +124,13 @@ export default {
     onKeyCtrlEnter()     { this.$emit('key-ctrl-enter') },
 
     onClick() {
-      this.realPlaceholder = false;
+      this.isFocused = true;
       this.$emit('click');
     },
 
     onDblclick() {
       this.cursorToEnd();
+      this.isFocused = true;
       this.$emit('dblclick');
     }
   }

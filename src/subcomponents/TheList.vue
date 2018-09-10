@@ -1,7 +1,7 @@
 <template>
   <div class="list">
-    <!-- Here we add the css-style that determine items' background; while
-         in `ListItem, we add css that determines their text-color/etc -->
+    <!-- Here we add the css-style that determines items' background; while
+         in `ListItem`, we add css that determines their text-color/etc -->
     <list-item
       v-for="(item, index) in items"
       :search-str="searchStr"
@@ -27,7 +27,7 @@
       @hover="onItemHover"
       @click="onItemClick"
     />
-    <!-- The literal item is not part of `items` (=given by VsmDictionary) -->
+    <!-- The literal item is not part of `items` (=returned by VsmDictionary) -->
     <list-item-literal
       v-if="hasItemLiteral"
       :search-str="searchStr"
@@ -72,6 +72,8 @@ export default {
       type: Object,
       required: true
     },
+    // Note: TheList receives `dictInfos` as an ID-based Map, {id: {id:, name:}},
+    // not as an Array that is returned by a VsmDictionary.
     dictInfos: {
       type: Object,
       required: true
@@ -96,11 +98,8 @@ export default {
 
   computed: {
     indexLastFixedItem() {
-      var index = -1;
-      for (var i = 0; i < this.items.length; i++) {
-        if (/^[FG]$/.test(this.items[i].type))  index = i;
-      }
-      return index;
+      return this.items.reduce((index, item, i) =>
+        item.type == 'F' || item.type == 'G' ? i : index,  -1);
     }
   },
 

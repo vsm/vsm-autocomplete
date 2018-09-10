@@ -24,7 +24,7 @@
     <vsm-autocomplete
       :vsm-dictionary="vsmDictionary"
       :autofocus="true"
-      :input-placeholder="inputPlaceholder"
+      :placeholder="placeholder"
       :query-options="queryOptions"
       :max-string-lengths="maxStringLengths"
       :item-literal-content="itemLiteralContent"
@@ -35,7 +35,7 @@
       @key-esc="onKeyEsc"
       @key-bksp="onKeyBksp"
       @key-tab="onKeyTab"
-      @double-click="onDoubleClick"
+      @dblclick="onDoubleClick"
       @list-open="onListOpen"
       @list-close="onListClose"
       @item-active-change="onItemActiveChange"

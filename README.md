@@ -5,15 +5,14 @@
 
 ## Intro
 
-`vsm-autocomplete` is a web-page component for looking up ontology terms,
-which are fetched from a given
-[`vsm-dictionary`](https://github.com/vsmjs/vsm-dictionary) interface.  
-&nbsp;&ndash; (ontology = dictionary of terms linked to IDs).
+`vsm-autocomplete` is a web-page component for looking up **terms** that are
+**linked to identifiers**. These are fetched from a given
+[`vsm-dictionary`](https://github.com/vsmjs/vsm-dictionary).
 
-Its main purpose is to be a sub-component of
+Its main purpose is to be a subcomponent of
 [`vsm-box`](https://github.com/vsmjs/vsm-box).
 But it can also be used in other applications that need an input-field
-with ontology lookup.
+with term+ID lookup.
 
 
 <br>
@@ -22,20 +21,22 @@ with ontology lookup.
 
 + `vsm-autocomplete` is a [Vue.js](https://vuejs.org/)-based
   **input field component**,
-  that a web&nbsp;developer can embed inside:
-  - a larger Vue component. This is the use-case of
+  that a web&nbsp;developer can embed inside one of these:
+  - A larger Vue component. This is the use-case of
     [`vsm-box`](https://github.com/vsmjs/vsm-box).
-  - a project that bundles it with a particular vsm-dictionary.  
+  - A project that bundles it with a particular vsm-dictionary.  
     E.g. one could make:
     `vsm-autocomplete` + `vsm-dictionary-bioportal` (to-develop) + a webpack
-    [setup](https://github.com/stcruy/building-a-reusable-vue-web-component),
-    => a standalone web-component `vsm-autocomplete-bioportal`.
-  - a full Vue application.<br><br>
-+ It makes a '`<vsm-autocomplete>`' _new HTML-tag_ available, which has a
-  required attribute: an object of type `vsm-dictionary`.  
-  A vsm-dictionary is an interface module that connects to some particular
-  database server, in order to get terms that are linked to identifiers.  
-  It could query e.g. [BioPortal](https://bioportal.bioontology.org/ontologies)
+    [setup](https://github.com/stcruy/building-a-reusable-vue-web-component),  
+    to create a standalone web-component: `vsm-autocomplete-bioportal`.
+  - A full Vue application.<br><br>
++ It makes a _new HTML-tag_ available: '`<vsm-autocomplete>`', which
+  requires at least a '`vsm-dictionary="..."`' attribute.  
+  This attribute points to an object of type 'VsmDictionary', which is
+  an interface module that connects to a particular database server,
+  in order to get terms and identifiers. 
+  The particular interface module could query e.g.
+  [BioPortal](https://bioportal.bioontology.org/ontologies)
   or [PubDictionaries](http://pubdictionaries.org/).<br><br>
 + When a user starts typing, the component queries the vsm-dictionary for
   matching terms,  
@@ -55,7 +56,8 @@ with ontology lookup.
     These would get shown as separate autocomplete-items
     (same term, different IDs). (Think e.g. of gene names).
   - there can be "fixed terms". These are 'preferred matches' that result in
-    matching items that appear on top of the selection-panel.
+    matching items that appear on top of the selection-panel (also for an empty
+    search string).
   - terms can include any special character (like '&beta;-carotene').
   - terms can have some HTML-styling. E.g. italic style for human gene names,
     or parts in superscript for charged ions
@@ -193,6 +195,8 @@ autocomplete selection-list.
   + This includes S/T-type items only,
     while N/R/F/G-type items (see VsmDictionary's spec)
     and a item-literal may get added in addition.
+- The `query-options`'s `idts` specifies a list of fixedTerms (see
+  vsm-dictionary's spec), only if this autocomplete component should use any.  
 - In the selection-panel, N/R/F/G-type items get CSS-styling
   that makes them visually distinct.
 - The `max-string-lengths`'s `strAndDescr` sets the maximum length
@@ -260,10 +264,10 @@ VsmAutocomplete
 
 ### FixedTerms pre-loading
 
-It makes sure that any needed fixedTerm data
-(specified by `queryOptions`'s `idts[]` (see vsm-dictionary's spec))  
-is loaded into the given `vsmDictionary`,
-before making any requests for matching strings to it.
+If this autocomplete component should take into account some fixedTerms, i.e.
+if it is given some `queryOptions.idts[]` (see vsm-dictionary's spec) as prop,  
+then it makes sure that this fixedTerm data is pre-loaded in the given
+`vsmDictionary`, before making any requests for matching strings to it.
 
 <br>
 
