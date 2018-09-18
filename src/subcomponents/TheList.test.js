@@ -23,13 +23,12 @@ describe('sub/TheList', () => {
   const maxStringLengths = {str: Number.MAX_VALUE, strAndDescr: Number.MAX_VALUE};
 
 
-  const make = props => mount(
-    TheList,
-    { propsData: Object.assign(
+  const make = props => mount(TheList, {
+    propsData: Object.assign(
       { items, maxStringLengths, dictInfos },
       props
-    ) }
-  );
+    )
+  });
 
 
   it('initializes, when getting only the required props', () => {

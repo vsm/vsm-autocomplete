@@ -29,15 +29,14 @@ describe('sub/ListItem', () => {
 
 
   // A function for creating a test-component with custom props.
-  const make = props => shallowMount(
-    ListItem,
-    { propsData: Object.assign(
+  const make = props => shallowMount(ListItem, {
+    propsData: Object.assign(
       // Add at least these 4 props; give them default (but overridable) values:
       { item, maxStringLengths, dictInfo, vsmDictionary },
       // A test can override the above and add others, via the `props` argument:
       props
-    ) }
-  );
+    )
+  });
 
   // Shorthands for testing the text/html of a ListItem's different html-parts.
   const _str   = wrap => wrap.find('.item-part-str'  ).text();

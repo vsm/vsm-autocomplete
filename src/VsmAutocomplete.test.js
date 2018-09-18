@@ -67,19 +67,16 @@ describe('VsmAutocomplete', () => {
    * This is used by each test to create a test-component with custom props.
    * By using `mount()` (not `shallowMount`), it adds full subcomponents too.
    */
-  const make = (props, listeners) => mount(
-    VsmAutocomplete,
-    {
-      propsData: Object.assign(
-        { vsmDictionary: dict }, // Add at least the required prop (overridable).
-        props                    // Insert test-specific props from the arg.
-      ),
-      listeners: listeners || {  // Add a set of listeners, by default.
-        'item-literal-select': s => s,  ///D(`called with ${s}.`),
-        'item-active-change':  o => o   ///D(o)
-      }
+  const make = (props, listeners) => mount(VsmAutocomplete, {
+    propsData: Object.assign(
+      { vsmDictionary: dict }, // Add at least the required prop (overridable).
+      props                    // Insert test-specific props from the arg.
+    ),
+    listeners: listeners || {  // Add a set of listeners, by default.
+      'item-literal-select': s => s,  ///D(`called with ${s}.`),
+      'item-active-change':  o => o   ///D(o)
     }
-  );
+  });
 
 
 

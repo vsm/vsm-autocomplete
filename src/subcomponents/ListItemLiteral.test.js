@@ -8,13 +8,12 @@ describe('sub/ListItemLiteral', () => {
   const maxStringLengthsS = { str: 3, strAndDescr: Number.MAX_VALUE };
 
 
-  const make = props => shallowMount(
-    ListItemLiteral,
-    { propsData: Object.assign(
+  const make = props => shallowMount(ListItemLiteral, {
+    propsData: Object.assign(
       { maxStringLengths, itemLiteralContent: false },
       props
-    ) }
-  );
+    )
+  });
 
 
   /**
