@@ -257,11 +257,12 @@ export default {
     },
 
     onInputChange() {
-      var openIt = this.isListOpen || this.inputStr !== this.autoChangedInputStr;
+      var keepListClosed =
+        !this.isListOpen  &&  this.inputStr === this.autoChangedInputStr;
       this.autoChangedInputStr = false;
 
       if (!this.isListOpen)  this.resetList();  // Prevent flashing old results.
-      if (openIt)  this.openList();
+      if (!keepListClosed)  this.openList();
     },
 
     onKeyCtrlEnter() {
