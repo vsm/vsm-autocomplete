@@ -375,6 +375,54 @@ describe('VsmAutocomplete', () => {
     });
 
 
+    it('does not open a closed TheList if the `initialValue` prop ' +
+       'is changed', () => {
+      w = make({ initialValue: 'ab' });
+      clock.tick(300);
+      _listEx().should.equal(false);
+
+      w.setProps({ initialValue: 'b' });
+      clock.tick(1000);
+      _listEx().should.equal(false);
+    });
+
+
+    it('does not open an Esc-closed TheList if the `initialValue` prop ' +
+       'is changed', () => {
+      w = make({ initialValue: 'ab' });
+      _focus();
+      clock.tick(300);
+      _listEx().should.equal(true);
+
+      _keyEsc();
+      _listEx().should.equal(false);
+
+      w.setProps({ initialValue: 'b' });
+      clock.tick(1000);
+      _listEx().should.equal(false);
+    });
+
+
+    it('does not open a closed TheList if the `initialValue` prop ' +
+       'is changed to the same value as the current TheInput content', () => {
+      w = make({ initialValue: 'ab' });
+      _focus();
+      clock.tick(300);
+      _listEx().should.equal(true);
+
+      _setInput('b');
+      clock.tick(300);
+      _listEx().should.equal(true);
+
+      _keyEsc();
+      _listEx().should.equal(false);
+
+      w.setProps({ initialValue: 'b' });
+      clock.tick(1000);
+      _listEx().should.equal(false);
+    });
+
+
     it('adds a ListItemLiteral if a listener for it is attached', cb => {
       w = make({
         initialValue: 'ab'  // Matches `e2`.

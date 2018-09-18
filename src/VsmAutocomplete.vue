@@ -98,6 +98,7 @@ export default {
     showError: false,
     mayListOpen: false,  // Is `true` when loading, before receiving list-data.
     listClosedHard: false,  // Helps keep list closed on refocus after Esc-press.
+    autoChangedInputStr: false,  // Manages changes to `initialValue` prop.
     matches: [],   // The list of currently shown match-objects.
     dictInfos: {}, // DictID-key-based Map of dictInfos that appear in `matches`.
     activeIndex: 0
@@ -186,8 +187,11 @@ export default {
       this.resetComponent();
     },
 
-    initialValue: function() {
-      this.inputStr = this.initialValue;
+    initialValue: function(value) {
+      if (this.inputStr !== value) {
+        // Also temp. set `autoChangedInputStr`, to prevent auto-opening TheList.
+        this.inputStr = this.autoChangedInputStr = value;
+      }
     },
 
     queryOptions: function() {
@@ -253,8 +257,11 @@ export default {
     },
 
     onInputChange() {
+      var openIt = this.isListOpen || this.inputStr !== this.autoChangedInputStr;
+      this.autoChangedInputStr = false;
+
       if (!this.isListOpen)  this.resetList();  // Prevent flashing old results.
-      this.openList();
+      if (openIt)  this.openList();
     },
 
     onKeyCtrlEnter() {

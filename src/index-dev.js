@@ -40,10 +40,15 @@ function runDemo() {
         return '<div title="Advanced search">' +
           `Search for '${trimmedSearchStr}' ▸</div>`;
       },
+      initialValue: 'tes',
       report: ''
     },
 
     computed: {
+    },
+
+    mounted: function() {
+      ///setTimeout(() => { this.initialValue = 'te' }, 1000);
     },
 
     methods: {
