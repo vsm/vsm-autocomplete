@@ -224,7 +224,7 @@ autocomplete selection-list.
 | key-bksp            |        | When `Backspace` is pressed, _while the input-field is empty_ |
 | key-ctrl-enter      |        | When `Ctrl+Enter` is pressed, _while the input-field is empty_ |
 | key-tab             | String | When `Tab` or `Shift+Tab` is pressed (-&gt; modifier key: `''` or `'shift'`) |
-| double-click        |        | When the input-field gets double-clicked |
+| dblclick            |        | When the input-field gets double-clicked |
 | list-open           |        | When the selection-list opens |
 | list-close          |        | When the selection-list closes |
 | item-active-change  | false\|Object\|String | When the active item in the selection-list changes<br>-&gt; &bull; false: none (on list-close) \|<br>&bull; Object: a match-object from VsmDictionary \|<br>&bull; String: the literal input string (for item-literal) |
