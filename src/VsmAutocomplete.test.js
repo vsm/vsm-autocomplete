@@ -162,6 +162,7 @@ describe('VsmAutocomplete', () => {
   const _emitB    = index => _emit (index, 'blur');
   const _emitEsc  = index => _emit (index, 'key-esc');
   const _emitBksp = index => _emit (index, 'key-bksp');
+  const _emitCEnt = index => _emit (index, 'key-ctrl-enter');
   const _emitTab  = index => _emitV(index, 'key-tab');
   const _emitDblc = index => _emit (index, 'dblclick');
 
@@ -1173,7 +1174,35 @@ describe('VsmAutocomplete', () => {
     });
 
 
-    it('on Ctrl+Enter, when TheInput contains no string-code, ' +
+    it('on Ctrl+Enter, when TheInput is empty, ' +
+       'it closes TheList and emits `key-ctrl-enter`', () => {
+      w = make({ initialValue: '', queryOptions: qoFT }, {});
+      _focus();
+      clock.tick(300);
+      _listLen().should.equal(1);  // TheList contains a fixedTerm-match item.
+
+      _keyCEnter();
+      _listEx()  .should.equal(false);
+      _emitLC()  .should.equal(true);
+      _emitCEnt().should.equal(true);
+    });
+
+
+    it('on Ctrl+Enter, when TheInput contains only whitespace, ' +
+       'it closes TheList and emits `key-ctrl-enter`', () => {
+      w = make({ initialValue: ' \t ', queryOptions: qoFT }, {});
+      _focus();
+      clock.tick(300);
+      _listLen().should.equal(1);
+
+      _keyCEnter();
+      _listEx()  .should.equal(false);
+      _emitLC()  .should.equal(true);
+      _emitCEnt().should.equal(true);
+    });
+
+
+    it('on Ctrl+Enter, when TheInput contains text without string-code, ' +
        'it changes and emits nothing', () => {
       w = make({ initialValue: 'ab' }, {});
       _focus();

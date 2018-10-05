@@ -266,7 +266,11 @@ export default {
     },
 
     onKeyCtrlEnter() {
-      this.inputStr = stringCodeConvert(this.inputStr);
+      if (!this.searchStr) {  // If whitespace only, or empty: close list & emit.
+        this.closeList();
+        this.$emit('key-ctrl-enter');
+      }
+      else  this.inputStr = stringCodeConvert(this.inputStr);
     },
 
     onInputFocus() { // Opens the list on focus, but not after some user action..
@@ -411,8 +415,8 @@ export default {
         !this.$refs.theInput.input.selectionStart)  this.inputStr = '';
 
       if (!this.inputStr) {
+        this.closeList();  // Close list on Bksp on already-empty input.
         this.$emit('key-bksp');
-        this.closeList();  // Close list on Esc on already-empty input.
       }
     },
 

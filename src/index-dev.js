@@ -70,6 +70,9 @@ function runDemo() {
       onKeyBksp() {
         this.msg('bksp');
       },
+      onKeyCtrlEnter() {
+        this.msg('ctrl+enter');
+      },
       onKeyTab(mod) {
         this.msg((mod ? (mod + '+') : '') + 'tab');
       },

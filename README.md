@@ -222,6 +222,7 @@ autocomplete selection-list.
 | input-change        | String | When the input-field's content changes (-&gt; the latest value) |
 | key-esc             |        | When `Esc` is pressed, _while the selection-list is closed_ |
 | key-bksp            |        | When `Backspace` is pressed, _while the input-field is empty_ |
+| key-ctrl-enter      |        | When `Ctrl+Enter` is pressed, _while the input-field is empty_ |
 | key-tab             | String | When `Tab` or `Shift+Tab` is pressed (-&gt; modifier key: `''` or `'shift'`) |
 | double-click        |        | When the input-field gets double-clicked |
 | list-open           |        | When the selection-list opens |
@@ -236,7 +237,8 @@ autocomplete selection-list.
   i.e. it does not let the focus move away from the input-field.  
   Because in that case it means that a parent component
   wants to decide what happens on Tab / Shift-Tab.  
-- Please note the conditions stated above for `@key-esc` and `@key-bksp`.
+- Please note the conditions stated above for `@key-esc`, `@key-bksp`,
+  and `@key-ctrl-enter`.
 - `@item-select` is likely the most important event.
 
 
