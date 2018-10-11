@@ -1,4 +1,6 @@
 /*
+For a clean reinstall:
+delete 'package-lock.json', empty 'package.json'`s dev/Dependencies, and run:
 npm i -D \
   webpack  webpack-dev-server  webpack-cli \
   style-loader  css-loader  null-loader \
