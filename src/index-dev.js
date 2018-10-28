@@ -73,6 +73,9 @@ function runDemo() {
       onKeyCtrlEnter() {
         this.msg('ctrl+enter');
       },
+      onKeyShiftEnter() {
+        this.msg('shift+enter');
+      },
       onKeyTab(mod) {
         this.msg((mod ? (mod + '+') : '') + 'tab');
       },
