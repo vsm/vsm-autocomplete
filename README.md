@@ -223,6 +223,7 @@ autocomplete selection-list.
 | key-esc             |        | When `Esc` is pressed, _while the selection-list is closed_ |
 | key-bksp            |        | When `Backspace` is pressed, _while the input-field is empty_ |
 | key-ctrl-enter      |        | When `Ctrl+Enter` is pressed, _while the input-field is empty_ |
+| key-shift-enter     |        | When `Shift+Enter` is pressed |
 | key-tab             | String | When `Tab` or `Shift+Tab` is pressed (-&gt; modifier key: `''` or `'shift'`) |
 | dblclick            |        | When the input-field gets double-clicked |
 | list-open           |        | When the selection-list opens |

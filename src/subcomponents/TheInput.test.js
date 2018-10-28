@@ -131,7 +131,7 @@ describe('sub/TheInput', () => {
   });
 
   it('emits events for keys: up, down, esc, enter, bksp, tab, ' +
-     'shift+tab, ctrl+enter', () => {
+     'shift+tab, ctrl+enter, shift+enter', () => {
     var wrap = make({});
 
     wrap.trigger('keydown.up');
@@ -142,6 +142,7 @@ describe('sub/TheInput', () => {
     wrap.trigger('keydown.tab');
     wrap.trigger('keydown.tab',   { shiftKey: true });
     wrap.trigger('keydown.enter', { ctrlKey: true });
+    wrap.trigger('keydown.enter', { shiftKey: true });
 
     // See https://vue-test-utils.vuejs.org/api/wrapper/#emittedbyorder
     wrap.emittedByOrder().map(e => !e.args.length ? e.name : [e.name, e.args[0]])
@@ -153,7 +154,8 @@ describe('sub/TheInput', () => {
         'key-bksp',
         ['key-tab', ''],
         ['key-tab', 'shift'],
-        'key-ctrl-enter'
+        'key-ctrl-enter',
+        'key-shift-enter'
       ]);
 
     /*// Note: without `emittedByOrder()`, we'd have to take this into account:

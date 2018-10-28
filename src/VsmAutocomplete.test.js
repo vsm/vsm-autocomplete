@@ -131,6 +131,7 @@ describe('VsmAutocomplete', () => {
   const _keyTab    = () => _input().trigger('keydown.tab');
   const _keySTab   = () => _input().trigger('keydown.tab', { shiftKey: true });
   const _keyCEnter = () => _input().trigger('keydown.enter', { ctrlKey: true });
+  const _keySEnter = () => _input().trigger('keydown.enter', { shiftKey: true });
   const _setInput = newValue => {  // Changes the content of TheInput.
     var input = _input();
     input.element.value = newValue;
@@ -163,6 +164,7 @@ describe('VsmAutocomplete', () => {
   const _emitEsc  = index => _emit (index, 'key-esc');
   const _emitBksp = index => _emit (index, 'key-bksp');
   const _emitCEnt = index => _emit (index, 'key-ctrl-enter');
+  const _emitSEnt = index => _emit (index, 'key-shift-enter');
   const _emitTab  = index => _emitV(index, 'key-tab');
   const _emitDblc = index => _emit (index, 'dblclick');
 
@@ -1249,6 +1251,19 @@ describe('VsmAutocomplete', () => {
           cb();
         });
       });
+    });
+
+
+    it('on Shift+Enter, it closes TheList and emits `key-shift-enter`', () => {
+      w = make({ initialValue: 'a' }, {});
+      _focus();
+      clock.tick(300);
+      _listLen().should.equal(2);
+
+      _keySEnter();
+      _listEx()  .should.equal(false);
+      _emitLC()  .should.equal(true);
+      _emitSEnt().should.equal(true);
     });
 
 

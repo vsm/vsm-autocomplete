@@ -9,6 +9,7 @@
       @focus="onInputFocus"
       @blur="onInputBlur"
       @key-ctrl-enter="onKeyCtrlEnter"
+      @key-shift-enter="onKeyShiftEnter"
       @key-up="onKeyUp"
       @key-down="onKeyDown"
       @key-esc="onKeyEsc"
@@ -271,6 +272,11 @@ export default {
         this.$emit('key-ctrl-enter');
       }
       else  this.inputStr = stringCodeConvert(this.inputStr);
+    },
+
+    onKeyShiftEnter() {
+      this.closeList();
+      this.$emit('key-shift-enter');
     },
 
     onInputFocus() { // Opens the list on focus, but not after some user action..

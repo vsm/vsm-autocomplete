@@ -16,6 +16,7 @@
     @keydown.tab.exact="onKeyTab"
     @keydown.tab.shift.exact="onKeyShiftTab"
     @keydown.enter.ctrl.exact="onKeyCtrlEnter"
+    @keydown.enter.shift.exact="onKeyShiftEnter"
     @click.left.exact="onClick"
     @dblclick.left.exact="onDblclick"
   >
@@ -122,6 +123,7 @@ export default {
     onKeyTab     (event) { this.$emit('key-tab', '',      event) },
     onKeyShiftTab(event) { this.$emit('key-tab', 'shift', event) },
     onKeyCtrlEnter()     { this.$emit('key-ctrl-enter') },
+    onKeyShiftEnter()    { this.$emit('key-shift-enter') },
 
     onClick() {
       this.isFocused = true;
