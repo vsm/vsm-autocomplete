@@ -103,9 +103,9 @@ export default {
 
       // 3.) `info`.
       var info =
-        this.isNumberItem ? this.item.id :
+        this.isNumberItem ? this.uriTail(this.item.id) :
           this.item.type == 'R' ? '' :
-            (this.item.dictID || '');
+            this.uriTail(this.item.dictID);
 
       if (this.isNumberItem) {  // Remove prefix (e.g. '00:') of Number-IDs.
         var prefix =
@@ -114,9 +114,9 @@ export default {
         info = info.replace(prefix, '');
       }
 
-      var infoTitle = this.item.id +
-        (this.dictInfo && this.dictInfo.name ?
-          ` in ${ this.dictInfo.name }` : '');
+      var infoTitle = this.uriTail(this.item.id) +
+        (this.dictInfo && (this.dictInfo.abbrev || this.dictInfo.name) ?
+          ` in ${ this.dictInfo.abbrev || this.dictInfo.name }` : '');
 
       // 4.) `str`, `descr`, `info`, and `extra`; and their title-attributes.
       var strs = {
@@ -155,7 +155,11 @@ export default {
   methods: {
     onHover()     { this.$emit('hover', this.index) },
     onMousedown() { this.$emit('hover', this.index) },  // Ensure 'hover' b4 clk.
-    onClick()     { this.$emit('click', this.index) }
+    onClick()     { this.$emit('click', this.index) },
+
+    uriTail(s) {  // E.g. 'http://x.org/sub/DICT1' -> 'DICT1'.
+      return (s || '').replace(/^.*\/([^/]*)$/,'$1');
+    }
   }
 };
 

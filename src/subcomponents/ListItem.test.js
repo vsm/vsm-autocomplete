@@ -126,6 +126,41 @@ describe('sub/ListItem', () => {
     wrap.find('.item-part-info' ).exists().should.equal(false);
   });
 
+  it('shows only the tail of URI-type IDs', () => {
+    var wrap = make({ item: {
+      dictID: 'http://test.org/dictionaries/D02',
+      id:     'http://test.org/dictionaries/D02/id-2',
+      str: 'a',  descr: 'd',  type: 'S',  terms: [{ str: 'a' }]
+    }});
+    _info (wrap).should.equal('(D02)');
+    _infoT(wrap).should.equal('id-2 in ' + dictInfo.name);
+
+    // Part 2: test for Number-strings.
+    wrap = make({
+      dictInfo: Object.assign({}, dictInfoN, {id: 'http://a/D1'}),
+      item: Object.assign({}, itemN, {dictID: 'http://a/D1', id: 'http://x/ID1'})
+    });
+    _info (wrap).should.equal('(ID1)');
+    _infoT(wrap).should.equal('ID1 in ' + dictInfoN.name);
+  });
+
+  it('shows dictInfo\'s abbrev, or name, or neither in the info-part, ' +
+     'depending on what is available', () => {
+    var wrap = make({
+      dictInfo: { id: 'http://a/D01', abbrev: 'AD01', name: 'Dict.1' }
+    });
+    _info (wrap).should.equal('(D01)');
+    _infoT(wrap).should.equal('id-1 in AD01');
+
+    wrap = make({ dictInfo: { id: 'http://a/D01', name: 'Dict.1' } });
+    _info (wrap).should.equal('(D01)');
+    _infoT(wrap).should.equal('id-1 in Dict.1');
+
+    wrap = make({ dictInfo: { id: 'http://a/D01' } });
+    _info (wrap).should.equal('(D01)');
+    _infoT(wrap).should.equal('id-1');
+  });
+
   it('omits `dictInfo`-related output if none is given', () => {
     var wrap = make({ dictInfo: undefined });
     _info (wrap).should.equal('(' + item.dictID + ')');
