@@ -144,17 +144,21 @@ describe('sub/ListItem', () => {
     _infoT(wrap).should.equal('ID1 in ' + dictInfoN.name);
   });
 
-  it('shows dictInfo\'s abbrev, or name, or neither in the info-part, ' +
+  it('shows dictInfo.abbrev or dictInfo.id-URI-tail / etc in the info-part, ' +
      'depending on what is available', () => {
     var wrap = make({
-      dictInfo: { id: 'http://a/D01', abbrev: 'AD01', name: 'Dict.1' }
+      dictInfo: { id: 'http://a/D01', abbrev: 'AA1', name: 'Dict.1' }
     });
-    _info (wrap).should.equal('(D01)');
-    _infoT(wrap).should.equal('id-1 in AD01');
+    _info (wrap).should.equal('(AA1)');
+    _infoT(wrap).should.equal('id-1 in Dict.1');
 
     wrap = make({ dictInfo: { id: 'http://a/D01', name: 'Dict.1' } });
     _info (wrap).should.equal('(D01)');
     _infoT(wrap).should.equal('id-1 in Dict.1');
+
+    wrap = make({ dictInfo: { id: 'http://a/D01', abbrev: 'AA1' } });
+    _info (wrap).should.equal('(AA1)');
+    _infoT(wrap).should.equal('id-1');
 
     wrap = make({ dictInfo: { id: 'http://a/D01' } });
     _info (wrap).should.equal('(D01)');
@@ -164,7 +168,7 @@ describe('sub/ListItem', () => {
   it('omits `dictInfo`-related output if none is given', () => {
     var wrap = make({ dictInfo: undefined });
     _info (wrap).should.equal('(' + item.dictID + ')');
-    _infoT(wrap).should.equal( item.id);  // I.e. no "+ ' in ' + dictInfo.name".
+    _infoT(wrap).should.equal(item.id);  // I.e. no "+ ' in ' + dictInfo.name".
   });
 
 

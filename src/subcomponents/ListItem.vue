@@ -105,7 +105,7 @@ export default {
       var info =
         this.isNumberItem ? this.uriTail(this.item.id) :
           this.item.type == 'R' ? '' :
-            this.uriTail(this.item.dictID);
+            ( (this.dictInfo || {}).abbrev  ||  this.uriTail(this.item.dictID) );
 
       if (this.isNumberItem) {  // Remove prefix (e.g. '00:') of Number-IDs.
         var prefix =
@@ -115,8 +115,8 @@ export default {
       }
 
       var infoTitle = this.uriTail(this.item.id) +
-        (this.dictInfo && (this.dictInfo.abbrev || this.dictInfo.name) ?
-          ` in ${ this.dictInfo.abbrev || this.dictInfo.name }` : '');
+        (this.dictInfo && this.dictInfo.name ?
+          ` in ${ this.dictInfo.name }` : '');
 
       // 4.) `str`, `descr`, `info`, and `extra`; and their title-attributes.
       var strs = {
