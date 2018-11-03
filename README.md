@@ -222,7 +222,7 @@ autocomplete selection-list.
 | input-change        | String | When the input-field's content changes (-&gt; the latest value) |
 | key-esc             |        | When `Esc` is pressed, _while the selection-list is closed_ |
 | key-bksp            |        | When `Backspace` is pressed, _while the input-field is empty_ |
-| key-ctrl-enter      |        | When `Ctrl+Enter` is pressed, _while the input-field is empty_ |
+| key-ctrl-enter      |        | When `Ctrl+Enter` is pressed, _while the input-field has no string-codes_ |
 | key-shift-enter     |        | When `Shift+Enter` is pressed |
 | key-tab             | String | When `Tab` or `Shift+Tab` is pressed (-&gt; modifier key: `''` or `'shift'`) |
 | dblclick            |        | When the input-field gets double-clicked |
@@ -240,6 +240,10 @@ autocomplete selection-list.
   wants to decide what happens on Tab / Shift-Tab.  
 - Please note the conditions stated above for `@key-esc`, `@key-bksp`,
   and `@key-ctrl-enter`.
+- The user can press `Ctrl+Enter` to convert certain string-codes in the input
+  (if any) to special characters, e.g. '\beta' to &beta;.  
+  Only if no codes were replaced, it emits `key-ctrl-enter`, which an external
+  listener may act upon.
 - `@item-select` is likely the most important event.
 
 

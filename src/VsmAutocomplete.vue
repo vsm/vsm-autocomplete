@@ -267,11 +267,12 @@ export default {
     },
 
     onKeyCtrlEnter() {
-      if (!this.searchStr) {  // If whitespace only, or empty: close list & emit.
+      var str = stringCodeConvert(this.inputStr);
+      if (str != this.inputStr)  this.inputStr = str;
+      else {
         this.closeList();
         this.$emit('key-ctrl-enter');
       }
-      else  this.inputStr = stringCodeConvert(this.inputStr);
     },
 
     onKeyShiftEnter() {

@@ -1190,36 +1190,21 @@ describe('VsmAutocomplete', () => {
     });
 
 
-    it('on Ctrl+Enter, when TheInput contains only whitespace, ' +
-       'it closes TheList and emits `key-ctrl-enter`', () => {
-      w = make({ initialValue: ' \t ', queryOptions: qoFT }, {});
-      _focus();
-      clock.tick(300);
-      _listLen().should.equal(1);
-
-      _keyCEnter();
-      _listEx()  .should.equal(false);
-      _emitLC()  .should.equal(true);
-      _emitCEnt().should.equal(true);
-    });
-
-
     it('on Ctrl+Enter, when TheInput contains text without string-code, ' +
-       'it changes and emits nothing', () => {
+       'it closes TheList and emits `key-ctrl-enter`', () => {
       w = make({ initialValue: 'ab' }, {});
       _focus();
       clock.tick(300);
 
       _inputV().should.equal('ab');
       _listLen().should.equal(1);
-      var emitCount = w.emittedByOrder().length;
 
       _keyCEnter();
       clock.tick(1000);
-
       _inputV().should.equal('ab');
-      _listLen().should.equal(1);
-      w.emittedByOrder().length.should.equal(emitCount);  // No new emits.
+      _listEx()  .should.equal(false);
+      _emitLC()  .should.equal(true);
+      _emitCEnt().should.equal(true);
     });
 
 
@@ -1248,6 +1233,7 @@ describe('VsmAutocomplete', () => {
           _itemLOnly();  // Still only a ListItemLiteral, in an open TheList.
           _itemLT () .should.contain('abββ'); // It contains TheInput's value.
           _emitIAC(1).should.equal('abββ');   // It emitted item-active-change.
+          _emitCEnt().should.equal(false);    // It emitted no key-ctrl-enter.
           cb();
         });
       });
