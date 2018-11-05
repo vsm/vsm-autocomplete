@@ -31,7 +31,7 @@ describe('sub/TheInput', () => {
   });
 
   it('hides a placeholder when the TheInput gets focused, and ' +
-     'and puts it back on blur', () => {
+     'puts it back on blur', () => {
     var wrap = make({ placeholder: 'plc' });
     wrap.attributes().placeholder.should.equal('plc');
     wrap.trigger('focus');
