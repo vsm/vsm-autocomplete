@@ -70,7 +70,7 @@ with term+ID lookup.
 
 To see an interactive demo (that uses example dictionary-data), run:
 
-```
+```sh
 git clone git@github.com:vsmjs/vsm-autocomplete.git
 cd vsm-autocomplete
 npm install
@@ -83,7 +83,7 @@ npm start
 
 Here we embed it in another Vue component, e.g. in a `MyComp.vue`:
 
-```
+```js
 <template>
   <div class="my-comp">
     <vsm-autocomplete
@@ -204,7 +204,7 @@ autocomplete selection-list.
 - The `item-literal-content` function gets as argument: the current content
   of the input-field.  
   Its return value will be used as the item-literal's HTML-content. E.g.:  
-  ```
+  ```js
     itemLiteralContent: function(trimmedSearchStr) {
       return '<div title="Advanced search">' +
         `Search for '${trimmedSearchStr}' ▸</div>`;
