@@ -219,7 +219,8 @@ autocomplete selection-list.
 |---------------------|--------|----------------------------|
 | focus               |        | When the input-field gets the page focus |
 | blur                |        | When the input-field loses the focus |
-| input-change        | String | When the input-field's content changes (-&gt; the latest value) |
+| input-change        | String | When the input-field's content changes, _after trimming_ (-&gt; the latest value, trimmed) |
+| input               | String | When the input-field's content changes (-&gt; the latest value) |
 | key-esc             |        | When `Esc` is pressed, _while the selection-list is closed_ |
 | key-bksp            |        | When `Backspace` is pressed, _while the input-field is empty_ |
 | key-ctrl-enter      |        | When `Ctrl+Enter` is pressed, _while the input-field has no string-codes_ |

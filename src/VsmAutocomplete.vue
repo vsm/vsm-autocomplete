@@ -204,6 +204,10 @@ export default {
       this.$emit('input-change', this.searchStr);  // Also note: not `inputStr`.
     },
 
+    inputStr: function() {  // Emits 'input' for any change, disregarding trim.
+      this.$emit('input', this.inputStr);
+    },
+
     isListOpen: function(value) {
       this.$emit('list-' + (value ? 'open' : 'close'));
     },
@@ -230,6 +234,7 @@ export default {
 
   mounted: function() {
     this.$emit('input-change', this.searchStr);
+    this.$emit('input', this.inputStr);
   },
 
 

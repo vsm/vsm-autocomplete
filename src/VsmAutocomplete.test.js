@@ -155,6 +155,7 @@ describe('VsmAutocomplete', () => {
 
   const _emitIAC  = index => _emitV(index, 'item-active-change');
   const _emitIC   = index => _emitV(index, 'input-change');
+  const _emitI    = index => _emitV(index, 'input');
   const _emitSel  = index => _emitV(index, 'item-select');
   const _emitLSel = index => _emitV(index, 'item-literal-select');
   const _emitLO   = index => _emit (index, 'list-open');
@@ -923,60 +924,66 @@ describe('VsmAutocomplete', () => {
     });
 
 
-    it('trims the input string (i.e. removes front/end whitespace)', () => {
+    it('trims the input string (i.e. removes front/end whitespace) ' +
+       'before search', () => {
       w = make({});
-      _setInput(' \t ab \r\n ');  // Matches `e2`.
+      _setInput(' \t ab  ');  // Matches `e2`.
       clock.tick(300);
       _listEx () .should.equal(true);
       _itemPST(0).should.equal('ab');
     });
 
 
-    it('emits \'input-change\' + search-string, ' +
+    it('emits both \'input-change\' and \'input\' + search-string, ' +
        'for absent `initialValue`', () => {
       w = make({});
       clock.tick(300);
       _emitIC(0).should.equal('');
+      _emitI (0).should.equal('');
     });
 
 
-    it('emits \'input-change\' + trimmed search-string, ' +
-       'for a given `initialValue`', () => {
-      w = make({ initialValue: '  \r \n \t   a    ' });
+    it('emits \'input-change\' + trimmed search-string, and \'input\' + ' +
+       'full search-string, for a given `initialValue`', () => {
+      w = make({ initialValue: '    \t   a    ' });
       clock.tick(300);
       _emitIC(0).should.equal('a');
+      _emitI (0).should.equal('    \t   a    ');
     });
 
 
-    it('emits \'input-change\' + trimmed search-string, ' +
-       'when changing TheInput', () => {
+    it('emits \'input-change\' and \'input\', when changing TheInput', () => {
       w = make({});
       clock.tick(50);
 
-      _setInput(' \t ab \r\n ');
+      _setInput(' \t ab  ');
       clock.tick(300);
       _emitIC(1).should.equal('ab');
+      _emitI (1).should.equal(' \t ab  ');
 
-      _setInput('x');
+      _setInput('x ');
       clock.tick(300);
       _emitIC(2).should.equal('x');
+      _emitI (2).should.equal('x ');
     });
 
 
-    it('does not emit \'input-change\', nor changes TheList, if adding only ' +
-       'whitespace to the input string\'s start/end', () => {
+    it('emits no \'input-change\', nor changes TheList, if adding only ' +
+       'whitespace to input string\'s start/end; but emits \'input\'', () => {
       w = make({ initialValue: 'a' }, {});  // Matches `e1` and `e2`.
       _focus();
 
       clock.tick(300);
       _emitIC (0).should.equal('a');
+      _emitI  (0).should.equal('a');
       _listLen() .should.equal(2);
       _itemPST(0).should.equal('a');
       _itemPST(1).should.equal('ab');
 
-      _setInput('  \n \r  a \t  ');
+      _setInput(' a\t ');
       clock.tick(300);
-      _emitIC (1).should.equal(0); // It did not emit a second 'input-change'.
+      _emitIC (1).should.equal(0);       // Didn't emit a second 'input-change'.
+      _emitI  (1).should.equal(' a\t '); // Did emit a second 'input'.
       _listLen() .should.equal(2);     // } TheList did not change.
       _itemPST(0).should.equal('a');   // }
       _itemPST(1).should.equal('ab');  // }
@@ -1210,7 +1217,7 @@ describe('VsmAutocomplete', () => {
 
     it(['on Ctrl+Enter, when TheInput contains a string-code (e.g. \'\\beta\'),',
       'it changes TheInput\'s content (e.g. \'β\'), updates TheList, and emits',
-      'it with `input-change`; and `item-active-change` for a ListItemLiteral']
+      'it with `input/-change`; and `item-active-change` for a ListItemLiteral']
       .join('\n        '),
     cb => {
       w = make({ initialValue: 'ab\\beta/beta' });
@@ -1220,12 +1227,14 @@ describe('VsmAutocomplete', () => {
       vueTick(() => {
         _itemLOnly().should.equal(true);  // Only ListItemLiteral, in open list.
         _inputV ().should.equal('ab\\beta/beta');
-        _emitIC ().should.equal('ab\\beta/beta');
+        _emitIC ().should.equal('ab\\beta/beta');  // Emits both 'input-change'..
+        _emitI  ().should.equal('ab\\beta/beta');  // .. and 'input'.
         _emitIAC().should.equal('ab\\beta/beta');
 
         _keyCEnter();
         _inputV() .should.equal('abββ');  // Ctrl+Enter changed TheInput's..
         _emitIC(1).should.equal('abββ');  // ..value, and also emits this.
+        _emitI (1).should.equal('abββ');
 
         clock.tick(200);                  // Wait for the new query result.
 
