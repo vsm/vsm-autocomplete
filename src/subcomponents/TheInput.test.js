@@ -138,7 +138,7 @@ describe('sub/TheInput', () => {
     wrap.trigger('keydown.down');
     wrap.trigger('keydown.esc');
     wrap.trigger('keydown.enter');
-    wrap.trigger('keydown', { keyCode: 8 });
+    wrap.trigger('keydown.backspace');
     wrap.trigger('keydown.tab');
     wrap.trigger('keydown.tab',   { shiftKey: true });
     wrap.trigger('keydown.enter', { ctrlKey: true });

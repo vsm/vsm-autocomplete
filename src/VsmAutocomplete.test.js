@@ -127,7 +127,7 @@ describe('VsmAutocomplete', () => {
   const _keyDown   = () => _input().trigger('keydown.down');
   const _keyEsc    = () => _input().trigger('keydown.esc');
   const _keyEnter  = () => _input().trigger('keydown.enter');
-  const _keyBksp   = () => _input().trigger('keydown', { keyCode: 8 });
+  const _keyBksp   = () => _input().trigger('keydown.backspace');
   const _keyTab    = () => _input().trigger('keydown.tab');
   const _keySTab   = () => _input().trigger('keydown.tab', { shiftKey: true });
   const _keyCEnter = () => _input().trigger('keydown.enter', { ctrlKey: true });
