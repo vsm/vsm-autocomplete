@@ -40,7 +40,7 @@ export default {
   name: 'ListItem',
 
   props: {
-    searchStr: {  // Only used by a custom `dictInfo.f_aci()` function.
+    searchStr: {  // Only used by a `customItem()` function.
       type: String,
       default: ''
     },
@@ -55,6 +55,10 @@ export default {
     maxStringLengths: {
       type: Object,
       required: true
+    },
+    customItem: {
+      type: [Function, Boolean],
+      default: false
     },
     dictInfo: {
       type: Object,
@@ -119,6 +123,7 @@ export default {
           ` in ${ this.dictInfo.name }` : '');
 
       // 4.) `str`, `descr`, `info`, and `extra`; and their title-attributes.
+      // Note: all `strs`-props are Strings, never false/undefined.
       var strs = {
         str, strTitle,
         descr, descrTitle,
@@ -126,12 +131,11 @@ export default {
         extra: ''
       };
 
-      if (this.dictInfo && this.dictInfo.f_aci) {
-        // Note: all `strs`-props are guaranteed Strings, never false/undefined.
-        strs = this.dictInfo.f_aci(
-          this.item, strs, this.searchStr, this.maxStringLengths, this.dictInfo,
-          this.vsmDictionary);
-      }
+      if (this.customItem)  strs = this.customItem({
+        item: this.item,  searchStr: this.searchStr,
+        maxStringLengths: this.maxStringLengths,  dictInfo: this.dictInfo,
+        vsmDictionary: this.vsmDictionary,  strs
+      });
 
       // Now we can make empty title-attrs `false`, so Vue won't add them.
       // Note: _Vue_ already sanitizes `:title`-attrs, by HTML-encoding quotes.

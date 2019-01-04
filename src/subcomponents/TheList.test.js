@@ -40,8 +40,9 @@ describe('sub/TheList', () => {
         dictInfos,
         /// hasItemLiteral: false,
         /// itemLiteralContent: false,
+        /// customItem: false,
         /// activeIndex: 0,
-        //  vsmDictionary: {}
+        /// vsmDictionary: {}
       }
     });
     wrap.vm.indexLastFixedItem.should.equal(3);
@@ -94,28 +95,24 @@ describe('sub/TheList', () => {
   });
 
 
-  it('passes all attributes that `f_aci()` needs, to ListItem: ' +
+  it('passes all attributes that `customItem()` needs, to ListItem: ' +
      '`searchStr`, `item`, `dictInfo`, `vsmDictionary`, etc', () => {
     var spyData = {};
 
-    var item4 = items[4];  // Use just one of the `items`.
-    var dictInfos2 = {  // Link it to a dictInfo with a `f_aci()` that spies.
-      D01:  {
-        id: 'D01',
-        name: 'Dict.1',
-        f_aci: (item, strs, searchStr, msLengths, dictInfo, vsmDict) => {
-          spyData = { item, /*strs,*/ searchStr, msLengths, dictInfo, vsmDict };
-          return strs;
-        }
-      }
+    var item4 = items[4];       // Use just one of the `items`.
+    var customItem = data => {  // Link it to a `customItem()` that spies.
+      spyData      = Object.assign({}, data);  // Deep-clone, as ListItem.vue..
+      spyData.strs = Object.assign({}, data.strs);      // ..modifies it later.
+      return data.strs;
     };
     var msLengths2 = Object.assign(maxStringLengths, { str: 4 });
     var vsmDict2 = { x: 'test' };
 
     var wrap = make(
       { items: [item4],
-        dictInfos: dictInfos2,
+        dictInfos: dictInfos,
         maxStringLengths: msLengths2,
+        customItem: customItem,
         searchStr: 'ab',
         vsmDictionary: vsmDict2 });
 
@@ -123,9 +120,18 @@ describe('sub/TheList', () => {
     spyData.should.deep.equal({
       item: item4,
       searchStr: 'ab',
-      msLengths: msLengths2,
-      dictInfo: dictInfos2[item4.dictID],
-      vsmDict: vsmDict2
+      maxStringLengths: msLengths2,
+      dictInfo: dictInfos[item4.dictID],
+      vsmDictionary: vsmDict2,
+      strs: {
+        str:        item4.str,
+        strTitle:   '',
+        descr:      item4.descr,
+        descrTitle: '',
+        info:       item4.dictID,
+        infoTitle:  item4.id + ' in ' + dictInfos[item4.dictID].name,
+        extra:      ''
+      }
     });
   });
 

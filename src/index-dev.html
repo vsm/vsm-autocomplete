@@ -10,6 +10,12 @@
     a, a:visited { color: #FF0000; }
     #app { padding: 20px 0 18px 50px;  background-color: #FFEEDD;  min-height: 180px; }
     [v-cloak] { display: none; }
+
+    .reporter {
+      color: #bbb;  height: 16px;  max-width: 350px;  font-size: 13px;
+      margin: 0 0 1px 1px;  white-space: nowrap;  overflow: hidden;
+      text-overflow: ellipsis;  text-align: right;  direction: rtl;
+    }
   </style>
 
   <!-- For faster reloads, we include Vue.js in the webpack bundle, during dev.
@@ -28,6 +34,7 @@
       :query-options="queryOptions"
       :max-string-lengths="maxStringLengths"
       :item-literal-content="itemLiteralContent"
+      :custom-item="customItem"
       :initial-value="initialValue"
       @focus="onFocus"
       @blur="onBlur"
@@ -47,20 +54,8 @@
     </vsm-autocomplete>
   </div>
 
-  <style>
-    .reporter {
-      color: #bbb;
-      height: 16px;
-      max-width: 350px;
-      font-size: 13px;
-      margin: 0 0 1px 1px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-align: right;
-      direction: rtl;
-    }
 
+  <style>
     /* One can apply CSS-styling to/around a vsm-autocomplete, like: */
     .vsm-autocomplete {
       width: 200px;
@@ -69,12 +64,14 @@
       border: 1px solid #ddd;
     }
 
+
     /* One can also change vsm-autocomplete subcomponents' style. For example,
        this makes a non-active item-literal's text dark-grey: * /
     .vsm-autocomplete .item:not(.item-state-active).item-type-literal {
       color: #333;
     }  /* */
   </style>
+
 
   <!-- One can also override vsm-autocomplete's CSS-styles,
        by declaring CSS _after_ the Vue-activated '#app' div.

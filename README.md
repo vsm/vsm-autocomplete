@@ -188,6 +188,7 @@ autocomplete selection-list.
 | query-options        | Object            |          | { perPage: 20 } | This is sent along with calls to `vsmDictionary.getMatchesForString()` |
 | max-string-lengths   | Object            |          | { str: 40, strAndDescr: 70 } | Limits the length of matches' `str` and `descr` shown in  list-items<br>(in number of characters) |
 | item-literal-content | Function\|Boolean |          | false   | &bull; Function: returns HTML-content (see below) for the item-literal \|<br>&bull; false/absent: the default item-literal is used |
+| custom-item          | Function\|Boolean |          | false   | &bull; Function: returns HTML-content for each part of normal list-items (see below, under 'Customizing ListItem content') \|<br>&bull; false/absent: default content is used |
 
 <br>Notes:
 - The `placeholder` is hidden when the input-field is focused.
@@ -311,60 +312,58 @@ The selection-panel items are given a default content like:
 and each of the three parts may show extra info when the user mouse-hovers it;
 e.g. if "(descri...)" was cut short, then hovering shows the full description.
 
-One can customize the content of any of these parts,
-via custom-built **`f_aci()`** functions.  
-Each 'f_aci' is specific to a particular subdictionary of a VsmDictionary.
-It is stored in that subdictionary's `dictInfo` (as stated in VsmDictionary's
-[spec](https://github.com/vsmjs/vsm-dictionary/blob/master/Dictionary.spec.md)).  
-&nbsp;&bull; 'f_aci' stands for "**A**uto**c**omplete **i**tem" function.  
-&nbsp;&bull; E.g.: for a Human Genes subdictionary: it could insert a list of
-gene-name synonyms in the description part.  
-&nbsp;&bull; Or e.g.: it could add an image of a human vs. a mouse,
-to let users more quickly distinguish between (identically named) matches
-from a Human Genes vs. from a Mouse Genes subdictionary.<br><br>
+Any of these parts can be customized by giving a customizing function as the
+**`custom-item`** prop.  
+&nbsp;&bull; E.g.: for items that represent a match from a Human Genes
+subdictionary, it could insert a list of gene-name synonyms in the description
+part.  
+&nbsp;&bull; Or: for a list of items representing a mix of matches
+from a Human Genes and a Mouse Genes subdictionary resp.,
+it could add an image of the species so that users can
+more quickly distinguish between identically named matches.<br><br>
 
-`f_aci()` gets called during the construction of each ListItem,
-if the function exists in the ListItem's match's dictInfo.  
-It will be called with the following arguments (which are all possible
-information needed for building a ListItem):  
-`f_aci(matchObj, strs, searchStr, maxStringLengths, dictInfo, vsmDictionary)`:  
-- `matchObj`: the complete 'match'-object that this ListItem represents.
-  (The 'match' data-type is described in VsmDictionary's
-  [spec](https://github.com/vsmjs/vsm-dictionary/blob/master/Dictionary.spec.md)).
-- `searchStr`: the string that the user typed to find this match.
-- `maxStringLengths`: the `max-string-lengths` prop that was set
-  on this `<vsm-autocomplete>`.
-- `dictInfo`: the info-object of the subdictionary
-  from which this match came (which contains `f_aci()`).
-- `vsmDictionary`: the VsmDictionary instance being used.  
-  This is useful for accessing its `vsmDictionary.numberMatchConfig` details.
-- `strs`: the default content for the different parts of the ListItem.  
-  It is an Object with properties (Strings) that represent the different parts.  
-  The parts may contain HTML tags, but will most commonly be just text.  
-  All these properties are guaranteed Strings.  
-  This default content will be used if `f_aci()` doesn't change it.
-  - `str`: the match's term-string, which is `matchObj.str`,  
-    but trimmed in length according to `maxStringLengths.str`,  
-    and with `matchObj.style`'s custom CSS-styling already applied.
-  - `descr`: the match's description, which is `matchObj.descr`,  
-    but trimmed in length according to `maxStringLengths.strAndDescr`.
-  - `info`: the dictionary-ID, which is `matchObj.dictID`;  
-    (or for number-string matches: the number-ID; or for refTerms: empty).
-  - `strTitle`: the `str`-part's HTML `'title=".."'` attribute,  
-    which appears on mouse-hover.  
-    (If `str` was length-trimmed, then this is `matchObj.str`, else empty).
-  - `descrTitle`: the `descr`-part's HTML `'title=".."'` attribute.  
-    (If `descr` was length-trimmed, then this is `matchObj.descr`, else empty).
-  - `infoTitle`: the `info`-part's HTML `'title=".."'` attribute.  
-    (This is a text with `matchObj.id` and `dictInfo.name`).
-  - `extra`: an extra part that is added at the end of the ListItem,
-    and which is empty by default.<br><br>
+`customItem()` (if given) is called during the construction of each ListItem.  
+It is called with one argument: an Object with useful properties, representing
+all possible information needed for building a ListItem:
+`customItem(data)`:  
+- `data`: {Object}:
+  - `item`: the complete 'match'-object that this ListItem represents.
+    (The 'match' data-type is described in VsmDictionary's
+    [spec](https://github.com/vsmjs/vsm-dictionary/blob/master/Dictionary.spec.md)).
+  - `searchStr`: the string that the user typed to find this match.
+  - `maxStringLengths`: the `max-string-lengths` prop that was set
+    on this `<vsm-autocomplete>`.
+  - `dictInfo`: the info-object of the subdictionary
+    from which this match came (which contains `customItem()`).
+  - `vsmDictionary`: the VsmDictionary instance being used.  
+    (It can not be used for queries, as customItem() is synchronous. But it may
+    be used for accessing e.g. `vsmDictionary.numberMatchConfig` details).
+  - `strs`: the default content for the different parts of the ListItem.  
+    It is an Object with properties (Strings) that represent the different parts.  
+    The parts may contain HTML tags, but will most commonly be just text.  
+    All properties are guaranteed to be of type {String}.  
+    This default content will be used if `customItem()` does not change it.
+    - `str`: the match's term-string, which is `matchObj.str`,  
+      but trimmed in length according to `maxStringLengths.str`,  
+      and with `matchObj.style`'s custom CSS-styling already applied.
+    - `descr`: the match's description, which is `matchObj.descr`,  
+      but trimmed in length according to `maxStringLengths.strAndDescr`.
+    - `info`: the dictionary-ID, which is `matchObj.dictID`;  
+      (or for number-string matches: the number-ID; or for refTerms: empty).
+    - `strTitle`: the `str`-part's HTML `'title=".."'` attribute,  
+      which appears on mouse-hover.  
+      (If `str` was length-trimmed, then this is `matchObj.str`, else empty).
+    - `descrTitle`: the `descr`-part's HTML `'title=".."'` attribute.  
+      (If `descr` was length-trimmed, then this is `matchObj.descr`, else empty).
+    - `infoTitle`: the `info`-part's HTML `'title=".."'` attribute.  
+      (This is a text with `matchObj.id` and `dictInfo.name`).
+    - `extra`: an extra part that is added at the end of the ListItem,
+      and which is empty by default.<br><br>
 
-`f_aci()` must return an object like its argument `strs`.  
-It may simply return the given `strs` object, after modifying just
-those of the properties that it needs to.  
-- E.g. `f_aci: (item, strs) => { strs.descr += '!'; return strs; }`  
-  would add a "!" to the description-part (of any ListItem that
-  represents a match from this subdictionary), and leave the ListItem's
-  other parts unchanged. 
+`customItem()` must return an object like its argument `strs`.  
+It may simply return the given `strs` object, after directly modifying just
+those properties it needs to.  
+- E.g. `customItem: data => { if (data.item.dictID == 'X')  data.strs.descr += '!';  return data.strs; }`  
+  would add a "!" to the description-part of each ListItem from
+  subdictionary 'X' (only), and leave these ListItems' other parts unchanged. 
 - If any part is empty, it will be left out of the ListItem.

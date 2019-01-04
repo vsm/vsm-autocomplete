@@ -54,8 +54,9 @@ describe('sub/ListItem', () => {
         /// searchStr: '',
         item,
         maxStringLengths,
+        /// customItem: false,
         /// dictInfo,
-        /// vsmDictionary:  {}
+        /// vsmDictionary: {}
       }
     });
   });
@@ -172,29 +173,32 @@ describe('sub/ListItem', () => {
   });
 
 
-  it('applies a custom render function ' +  // (This is just a superficial test).
-     '`f_aci()`, which gets all needed data passed as its arguments', () => {
+  it('applies a custom render function, prop customItem()`, ' +
+     'which gets all needed data passed as its arguments', () => {
+    // (This is just a superficial test).
 
-    var dictInfoF = { id: 'D01', name: 'Dict.1',
-      f_aci: (item, strs, searchStr, maxStringLengths, dictInfo, vsmDict) => ({
+    var customItem = function (data) {
+      var { item, strs, searchStr, maxStringLengths, dictInfo, vsmDictionary }
+        = data;
+      return {
         str: `--${strs.str}--` + (item.z ? item.z.stars : ''),
         strTitle: 'strTitle__',
         descr: (item.terms || []).map(t => t.str).join(',') + ',' + strs.descr,
         descrTitle: 'descrTitle__',
         info: 'info__',
-        infoTitle: '__' +  // Helps test that all args are passed correctly:
+        infoTitle: '__' +  // Helps testing that all args are passed correctly:
           [ item.id, searchStr,
             maxStringLengths.str, maxStringLengths.strAndDescr,
-            dictInfo.id, dictInfo.name, vsmDict.numberMatchConfig.dictID,
-            vsmDict.numberMatchConfig.conceptIDPrefix,
+            dictInfo.id, dictInfo.name, vsmDictionary.numberMatchConfig.dictID,
+            vsmDictionary.numberMatchConfig.conceptIDPrefix,
             strs.str, strs.strTitle, strs.descr, strs.descrTitle,
             strs.info, strs.infoTitle, strs.extra ].join('__') + '__',
         extra: '<i a="b">extra__</i>'
-      })
+      };
     };
 
     var searchStr = 'SRCH';
-    var w = make({ searchStr, maxStringLengths, dictInfo: dictInfoF });
+    var w = make({ searchStr, maxStringLengths, dictInfo, customItem });
 
     _str   (w).should.equal('--' + item.str + '--**');  // New `strs.str`.
     _strT  (w).should.equal('strTitle__');              // New `strs.strTitle`.
@@ -203,7 +207,7 @@ describe('sub/ListItem', () => {
     _info  (w).should.equal('(' + 'info__' + ')');      // New `strs.info`.
     _extra (w).should.contain('<i a="b">extra__</i>');  // New `strs.extra`.
 
-    // Test that all `f_aci()`-arguments are passed correctly.
+    // Test that all `customItem()`-data-properties are passed correctly.
     var strs = {  // This object is built in ListItem's computed `strs()`.
       str:      item.str,
       strTitle: '',
@@ -211,11 +215,11 @@ describe('sub/ListItem', () => {
       descrTitle: '',
       info:      item.dictID,
       infoTitle: item.id + ' in ' + dictInfo.name,
-      extra: ''  // -> is always given as '' to f_aci(), which may replace it.
+      extra: ''  // -> is always given as '', and customItem() may replace it.
     };
     _infoT(w).should.equal('__' +
       [ item.id, searchStr, maxStringLengths.str, maxStringLengths.strAndDescr,
-        dictInfoF.id, dictInfoF.name, vsmDictionary.numberMatchConfig.dictID,
+        dictInfo.id, dictInfo.name, vsmDictionary.numberMatchConfig.dictID,
         vsmDictionary.numberMatchConfig.conceptIDPrefix,
         strs.str, strs.strTitle, strs.descr, strs.descrTitle,
         strs.info, strs.infoTitle, strs.extra ].join('__') + '__'
@@ -226,19 +230,19 @@ describe('sub/ListItem', () => {
   it('accepts HTML-code from the custom render function, ' +
      'but secures against `<script>`, `<iframe>`, etc. tags, ' +
      'and `"` in title-attributes ', () => {
+    // (In case some third-party customization functionality is given).
     var html = make({
       maxStringLengths: maxStringLengthsSD,
-      dictInfo: Object.assign({}, dictInfo, {
-        f_aci: (item, strs) => Object.assign(strs, {
-          strTitle:   '<x1>"<script>',
-          str:        '<x2>"<script>',
-          descrTitle: '<x3>"<script>',
-          descr:      '<x4>"<script>',
-          infoTitle:  '<x5>"<script>',
-          info:       '<x6>"<script>',
-          extra:      '<x7>"<script>< script="a"><iframe>< style><textarea\n>'
-        })
-      }),
+      dictInfo,
+      customItem: data => Object.assign(data.strs, {
+        strTitle:   '<x1>"<script>',
+        str:        '<x2>"<script>',
+        descrTitle: '<x3>"<script>',
+        descr:      '<x4>"<script>',
+        infoTitle:  '<x5>"<script>',
+        info:       '<x6>"<script>',
+        extra:      '<x7>"<script>< script="a"><iframe>< style><textarea\n>'
+      })
     }).html();
     ///H(html);
     html.should.contain('<x1>&quot;<script');
@@ -254,35 +258,33 @@ describe('sub/ListItem', () => {
     html.should.contain(       '&lt;textarea');
   });
 
-  it('drops empty \'title\' attributes', () => {
+  it('..and drops empty \'title\' attributes', () => {
     var wrap = make({
-      dictInfo: Object.assign({}, dictInfo, {
-        f_aci: (item, strs) => Object.assign(strs, {
-          strTitle: '',
-          str: '',
-          descrTitle: '',
-          infoTitle: ''
-        })
-      }),
+      dictInfo,
+      customItem: data => Object.assign(data.strs, {
+        strTitle: '',
+        str: '',
+        descrTitle: '',
+        infoTitle: ''
+      })
     });
     expect(_strT  (wrap)).to.equal(undefined);
     expect(_descrT(wrap)).to.equal(undefined);
     expect(_infoT (wrap)).to.equal(undefined);
   });
 
-  it('drops empty \'<span>\' tags, except for \'.item-part-str\'', () => {
+  it('..and drops empty \'<span>\' tags, except for \'.item-part-str\'', () => {
     var wrap = make({
-      dictInfo: Object.assign({}, dictInfo, {
-        f_aci: (item, strs) => Object.assign(strs, {
-          str: '',
-          descr: '',
-          info: '',
-          extra: '',
-          strTitle: 'test',
-          descrTitle: 'test',
-          infoTitle: 'test'
-        })
-      }),
+      dictInfo,
+      customItem: data => Object.assign(data.strs, {
+        str: '',
+        descr: '',
+        info: '',
+        extra: '',
+        strTitle: 'test',
+        descrTitle: 'test',
+        infoTitle: 'test'
+      })
     });
     wrap.find('.item-part-str'  ).exists().should.equal(true );
     wrap.find('.item-part-descr').exists().should.equal(false);

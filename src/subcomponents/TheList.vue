@@ -9,6 +9,7 @@
       :item="item"
       :key="item.id + item.str"
       :max-string-lengths="maxStringLengths"
+      :custom-item="customItem"
       :dict-info="dictInfos[item.dictID]"
       :vsm-dictionary="vsmDictionary"
       :class="[
@@ -83,6 +84,10 @@ export default {
       default: false
     },
     itemLiteralContent: {
+      type: [Function, Boolean],
+      default: false
+    },
+    customItem: {
       type: [Function, Boolean],
       default: false
     },

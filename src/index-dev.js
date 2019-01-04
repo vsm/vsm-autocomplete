@@ -32,13 +32,29 @@ function runDemo() {
         idts: [{id: 'CW:0045'}, {id: 'CW:0020'}],
         perPage: 15
       },
-      maxStringLengths: undefined && {  // Change && <-> || to de/activate this.
+      maxStringLengths: undefined && { // Change to !undefined to activate this.
         str: 2,
         strAndDescr: 40
       },
       itemLiteralContent: undefined && function(trimmedSearchStr) {
         return '<div title="Advanced search">' +
           `Search for '${trimmedSearchStr}' ▸</div>`;
+      },
+      customItem: !undefined && function(data) {
+        var { item, strs, dictInfo } = data;
+        if (item.dictID != 'VAR')  return strs;
+        var synonyms = item.terms && item.terms.length > 1 ?
+          item.terms.map(termObj => termObj.str).join(', ') : '';
+        return Object.assign(strs, {
+          str:
+            `${ strs.str } &nbsp;` +
+            '<span style="color: #000; font-weight: normal;">' +
+            `${ item.z && item.z.extraChar ? item.z.extraChar : '' }☘</span>`,
+          descr: (synonyms ? `<i>=${ synonyms };</i>&nbsp; ` : '') + strs.descr,
+          info: item.id,
+          infoTitle: (dictInfo && dictInfo.name ?
+            `${ dictInfo.id }: ${ dictInfo.name }` : '')
+        });
       },
       initialValue: 'tes',
       report: ''
@@ -342,27 +358,7 @@ function createData() {
               'both humans and computers',
             terms: [{str: 'VSM'}]
           },
-        ],
-
-        f_aci: function(item, strs, searchStr, maxStringLengths, dictInfo) {
-          var synonyms = item.terms && item.terms.length > 1 ?
-            item.terms.map(termObj => termObj.str).join(', ') : '';
-
-          return Object.assign(strs, {
-            str:
-              `${ strs.str } &nbsp;` +
-              '<span style="color: #000; font-weight: normal;">' +
-              `${ item.z && item.z.extraChar ? item.z.extraChar : '' }☘</span>`,
-
-            descr: (synonyms ? `<i>=${ synonyms };</i>&nbsp; ` : '') +strs.descr,
-
-            info: item.id,
-
-            infoTitle: (dictInfo && dictInfo.name ?
-              `${ dictInfo.id }: ${ dictInfo.name }` : '')
-
-          });
-        }
+        ]
       },
 
       { id: '00', name: 'Numbers', entries: [

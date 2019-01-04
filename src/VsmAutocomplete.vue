@@ -27,6 +27,7 @@
       :dict-infos="dictInfos"
       :has-item-literal="hasItemLiteral"
       :item-literal-content="itemLiteralContent"
+      :custom-item="customItem"
       :active-index="activeIndex"
       :vsm-dictionary="vsmDictionary"
       @item-hover="onItemHover"
@@ -88,6 +89,10 @@ export default {
     itemLiteralContent: {
       type: [Function, Boolean],  // `function(searchStr) {}`, or `false`.
       default: false              // If false, the default item-literal is used.
+    },
+    customItem: {
+      type: [Function, Boolean],
+      default: false
     }
   },
 
@@ -110,6 +115,14 @@ export default {
     searchStr() {  // (2/3): This is a trimmed version of `inputStr`.
       return this.inputStr.trim();
     },
+
+    queryOptions2() {
+      // The actually-used `queryOptions`. Prevents querying any z-object fields,
+      // if there is no `customItem()` to use that data.
+      return this.customItem ? this.queryOptions :
+        Object.assign({}, this.queryOptions, { z: [] });
+    },
+
     hasItemLiteral() {
       // TheList only gets a special 'item-literal' at the end,
       // if this vsm-autocomplete got an attached 'item-literal-select'-listener,
@@ -255,9 +268,9 @@ export default {
     },
 
     loadFixedTermsMaybe(cb) {  // Preloads data for fixedTerms, if any are given.
-      if (this.queryOptions.idts) {
+      if (this.queryOptions2.idts) {
         this.vsmDictionary.loadFixedTerms(
-          this.queryOptions.idts, this.queryOptions, cb);
+          this.queryOptions2.idts, this.queryOptions2, cb);
       }
       else cb(null);
     },
@@ -338,15 +351,15 @@ export default {
       ///DEBUG//console.log(`* requestListData('${this.searchStr}') -> ...`);
       this.vsmDictionary.getMatchesForString(
         this.searchStr,
-        this.queryOptions,
-        this.newMatchesArrived.bind(this, this.searchStr, this.queryOptions)
+        this.queryOptions2,
+        this.newMatchesArrived.bind(this, this.searchStr, this.queryOptions2)
       );
     },
 
     newMatchesArrived(queryStr, queryOpt, err, res) {
       // If data arrives late, e.g. after the query-str/-options has changed: do
       // not query for associated dictInfos too, but discard this stale result.
-      if (queryStr !== this.searchStr  ||  queryOpt !== this.queryOptions  ||
+      if (queryStr !== this.searchStr  ||  queryOpt !== this.queryOptions2  ||
         !this.mayListOpen)  return;
 
       var matches = err ? [] : res.items;
@@ -366,7 +379,7 @@ export default {
 
     newDictInfosArrived(queryStr, queryOpt, matches, err, res) {
       // Discard data that came in too late.  (But do use it TheList is closed).
-      if (queryStr !== this.searchStr || queryOpt !== this.queryOptions)  return;
+      if (queryStr !== this.searchStr || queryOpt !== this.queryOptions2) return;
       ///DEBUG//console.log(`* newDictInfosArrived() for '${this.searchStr}': ${matches.length}`);
 
       this.showError = !!err;

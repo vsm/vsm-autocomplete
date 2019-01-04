@@ -16,8 +16,7 @@ describe('VsmAutocomplete', () => {
   // DictInfo/entriy/refTerm-data, for a test-VsmDictionaryLocal.
   const di1 = { id: 'A', name: 'Name 1' };
   const di2 = { id: 'B', name: 'Name 2' };
-  const di3 = { id: 'C', name: 'Name 3',
-    f_aci: (item, strs) => Object.assign(strs, { str: `--${strs.str}--` }) };
+  const di3 = { id: 'C', name: 'Name 3' };
 
   const e1 = { id: 'A:01', dictID: 'A', terms: [{ str: 'a'   }] };
   const e2 = { id: 'A:02', dictID: 'A', terms: [{ str: 'ab'  }] };
@@ -238,7 +237,8 @@ describe('VsmAutocomplete', () => {
           /// initialValue: '',
           /// queryOptions: { perPage: 20 },
           /// maxStringLengths: { str: 40, strAndDescr: 70 },
-          /// itemLiteralContent: false
+          /// itemLiteralContent: false,
+          /// customItem: false
         }
       });
       ///H(w);
@@ -443,17 +443,59 @@ describe('VsmAutocomplete', () => {
     });
 
 
-    it('lets a `VsmDictionary`\'s dictInfo\'s `f_aci()` modify the ' +
-       'content of a ListItem', cb => {
-      w = make({ initialValue: 'x' });  // Matches `e4` and `e6`.
+    it('lets prop `customItem` modify the content of a ListItem', cb => {
+      w = make({
+        initialValue: 'x',   // Matches both `e4` and `e6`.
+        customItem: data =>  // Updates 'item-part-str' only for dictID=='C'.
+          data.item.dictID != 'C' ? data.strs :
+            Object.assign(data.strs, { str: `--${data.strs.str}--` })
+      });
       _focus();
       clock.tick(300);
 
       vueTick(() => {
         _listLen() .should.equal(3);
         _itemPST(0).should.equal('x');
-        _itemPST(1).should.equal('--xyz--');  // Because `e6` belongs to..
-        cb();              // dictInfo`di3`, which has a custom `f_aci()`.
+        _itemPST(1).should.equal('--xyz--');
+        cb();
+      });
+    });
+
+
+    it('only queries for entries\'s `z`-object if a `customItem()` prop ' +
+       'is given (which is the only function that uses the z-obj.)', cb => {
+      var optFT = 0;
+      var optGM = 0;
+      var dict2 = makeDictionary({ delay: 100 });
+      dict2.loadFixedTerms      = (idts, opt, cb) => { optFT = opt;  cb('err') };
+      dict2.getMatchesForString = (str,  opt, cb) => { optGM = opt;  cb('err') };
+
+      // Part 1: test without a customItem => it adds `.z=[]` to `queryOptions`.
+      w = make({
+        initialValue: 'x',
+        vsmDictionary: dict2,
+        queryOptions: { idts: [{ id: 'B:03' }] }
+      });
+      _focus();
+      clock.tick(300);
+      vueTick(() => {
+        optFT.should.deep.equal({ idts: [{ id: 'B:03' }], z: [] });
+        optGM.should.deep.equal(optFT);
+
+        // Part 2: test with a `customItem()` => it uses original `queryOptions`.
+        w = make({
+          initialValue: 'x',
+          vsmDictionary: dict2,
+          queryOptions: { idts: [{ id: 'B:03' }] },
+          customItem: data => data.strs
+        });
+        _focus();
+        clock.tick(300);
+        vueTick(() => {
+          optFT.should.deep.equal({ idts: [{ id: 'B:03' }] });  // No `z` added.
+          optGM.should.deep.equal(optFT);
+          cb();
+        });
       });
     });
 
