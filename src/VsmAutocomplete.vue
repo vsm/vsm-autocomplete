@@ -472,7 +472,7 @@ export default {
 
     selectItem(index) {
       if (this.isListStale)  return; // No action on a list that'll be replaced.
-      this.closeList();
+      this.closeList(false);
 
       if (this.hasItemLiteral  &&  index == this.listLength - 1) {
         this.$emit('item-literal-select', this.searchStr);
