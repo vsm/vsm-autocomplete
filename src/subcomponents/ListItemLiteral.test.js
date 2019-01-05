@@ -10,7 +10,7 @@ describe('sub/ListItemLiteral', () => {
 
   const make = props => shallowMount(ListItemLiteral, {
     propsData: Object.assign(
-      { maxStringLengths, itemLiteralContent: false },
+      { maxStringLengths, customItemLiteral: false },
       props
     )
   });
@@ -19,7 +19,10 @@ describe('sub/ListItemLiteral', () => {
   /**
    * Function that generates custom content, based on the current search-string.
    */
-  const itemLiteralContent = searchStr => `--${searchStr}--`;
+  const customItemLiteral = data => {
+    data.strs.str = `--${ data.searchStr }--`;
+    return data.strs;
+  };
 
 
   it('initializes, when getting only the required props', () => {
@@ -28,7 +31,7 @@ describe('sub/ListItemLiteral', () => {
         /// searchStr: '',
         /// index: 0,
         maxStringLengths,
-        /// itemLiteralContent: false
+        /// customItemLiteral: false
       }
     });
   });
@@ -46,8 +49,8 @@ describe('sub/ListItemLiteral', () => {
   });
 
   it('emits a (left-button) click event, with ListItemLiteral\'s ' +
-     '`index`, also when a `itemLiteralContent` is given', () => {
-    var wrap = make({ index: 3, itemLiteralContent });
+     '`index`, also when a `customItemLiteral` is given', () => {
+    var wrap = make({ index: 3, customItemLiteral });
     wrap.trigger('click', { button: 0 });
     wrap.emitted('click')[0][0].should.equal(3);
     wrap.trigger('click', { button: 2 });
@@ -61,8 +64,8 @@ describe('sub/ListItemLiteral', () => {
   });
 
   it('emits a hover event, with the `index`, ' +
-     'also when a `itemLiteralContent` is given', () => {
-    var wrap = make({ index: 3, itemLiteralContent });
+     'also when a `customItemLiteral` is given', () => {
+    var wrap = make({ index: 3, customItemLiteral });
     wrap.trigger('mousemove');
     wrap.emitted('hover')[0][0].should.equal(3);
   });
@@ -81,8 +84,8 @@ describe('sub/ListItemLiteral', () => {
   });
 
   it('on mousedown: cancels it and emits a hover-event, ' +
-     'also when a `itemLiteralContent` is given', () => {
-    var wrap = make({ index: 3, itemLiteralContent });
+     'also when a `customItemLiteral` is given', () => {
+    var wrap = make({ index: 3, customItemLiteral });
     var called = 0;
     wrap.trigger('mousedown', {
       button: 0,
@@ -98,8 +101,8 @@ describe('sub/ListItemLiteral', () => {
       .text().startsWith('xyz') .should.equal(true);
   });
 
-  it('shows custom content when a `itemLiteralContent` is given', () => {
-    make({ searchStr: 'xyz', itemLiteralContent })
+  it('shows custom content when a `customItemLiteral` is given', () => {
+    make({ searchStr: 'xyz', customItemLiteral })
       .text().startsWith('--xyz--') .should.equal(true);
   });
 
@@ -114,24 +117,30 @@ describe('sub/ListItemLiteral', () => {
     wrap.attributes().title.should.contain('\'abcde\'');
   });
 
-  it('limits `searchStr` length, ' +
-     'also when a custom `itemLiteralContent` is given', () => {
+  it('limits `searchStr` length, and provides this ' +
+     'as data when a custom `customItemLiteral` is given', () => {
     var wrap = make({
       searchStr: 'abcde',
       maxStringLengths: maxStringLengthsS,
-      itemLiteralContent
+      customItemLiteral: data => {
+        data.strs.str = `--${ data.strs.str }--`;  // Uses the trimmed string.
+        return data.strs;
+      }
     });
     wrap.text().startsWith('--ab…--') .should.equal(true);
   });
 
-  it('accepts HTML-code from the custom `itemLiteralContent` function, ' +
+  it('accepts HTML-code from the custom `customItemLiteral` function, ' +
      'but secures against `<script>`, `<iframe>`, etc. tags', () => {
     var html = make({
       searchStr: 'abc',
-      itemLiteralContent: searchStr =>
-        `--${searchStr}<script>< script="a"><iframe>< style><textarea\n>--`
+      customItemLiteral: data => {
+        data.strs.str =
+          `-${data.strs.str}<script>< script="a"><iframe>< style><textarea\n>-`;
+        return data.strs;
+      }
     }).html();
-    html.should.contain('--abc&lt;script');
+    html.should.contain('-abc&lt;script');
     html.should.contain('&lt; script');
     html.should.contain('&lt;iframe');
     html.should.contain('&lt; style');

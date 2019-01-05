@@ -237,7 +237,7 @@ describe('VsmAutocomplete', () => {
           /// initialValue: '',
           /// queryOptions: { perPage: 20 },
           /// maxStringLengths: { str: 40, strAndDescr: 70 },
-          /// itemLiteralContent: false,
+          /// customItemLiteral: false,
           /// customItem: false
         }
       });
@@ -521,11 +521,14 @@ describe('VsmAutocomplete', () => {
     });
 
 
-    it('lets the `itemLiteralContent` prop make custom content for a ' +
+    it('lets the `customItemLiteral` prop make custom content for a ' +
        'ListItemLiteral', cb => {
       w = make({
         initialValue: 'Q',  // Matches no entries.
-        itemLiteralContent: s => `<div x="y">_-${s}-_</div>`
+        customItemLiteral: data => {
+          data.strs.str = `<div x="y">_-${ data.strs.str }-_</div>`;
+          return data.strs;
+        }
       });
       _focus();
       clock.tick(300);
@@ -538,17 +541,23 @@ describe('VsmAutocomplete', () => {
     });
 
 
-    it('follows through immediately when `itemLiteralContent` prop is ' +
+    it('follows through immediately when `customItemLiteral` prop is ' +
        'changed', cb => {
       w = make({
         initialValue: 'Q',
-        itemLiteralContent: s => `<div x="y">_-${s}-_</div>`
+        customItemLiteral: data => {
+          data.strs.str = `<div x="y">_-${ data.strs.str }-_</div>`;
+          return data.strs;
+        }
       });
       _focus();
       clock.tick(300);
 
       vueTick(() => {
-        w.setProps({ itemLiteralContent: s => `**${s}**` });
+        w.setProps({ customItemLiteral: data => {
+          data.strs.str = `**${ data.strs.str }**`;
+          return data.strs;
+        }});
         vueTick(() => {
           _itemLOnly().should.equal(true);
           _itemL().html().should.contain('>**Q**<');

@@ -172,7 +172,7 @@ autocomplete selection-list.
 - It does not represent a match-object from the VsmDictionary, so it has no ID.  
   - It represents the input-field's literal string.
   - It has its own CSS-style to make it visually distinct.
-  - One can generate custom content for it, via the `:item-literal-content` prop.
+  - One can generate custom content for it, via the `:custom-item-literal` prop.
 
 
 <br>
@@ -187,8 +187,8 @@ autocomplete selection-list.
 | initial-value        | String            |          | ''      | The initial content for the input-field |
 | query-options        | Object            |          | { perPage: 20 } | This is sent along with calls to `vsmDictionary.getMatchesForString()` |
 | max-string-lengths   | Object            |          | { str: 40, strAndDescr: 70 } | Limits the length of matches' `str` and `descr` shown in  list-items<br>(in number of characters) |
-| item-literal-content | Function\|Boolean |          | false   | &bull; Function: returns HTML-content (see below) for the item-literal \|<br>&bull; false/absent: the default item-literal is used |
-| custom-item          | Function\|Boolean |          | false   | &bull; Function: returns HTML-content for each part of normal list-items (see below, under 'Customizing ListItem content') \|<br>&bull; false/absent: default content is used |
+| custom-item          | Function\|Boolean |          | false   | &bull; Function: returns HTML-content for each part of normal list-items (see below) \|<br>&bull; false/absent: default content is used |
+| custom-item-literal  | Function\|Boolean |          | false   | &bull; Function: returns HTML-content (see below) for the item-literal \|<br>&bull; false/absent: the default item-literal is used |
 
 <br>Notes:
 - The `placeholder` is hidden when the input-field is focused.
@@ -202,15 +202,8 @@ autocomplete selection-list.
   that makes them visually distinct.
 - The `max-string-lengths`'s `strAndDescr` sets the maximum length
   of an already length-trimmed `str`, plus its `descr`.
-- The `item-literal-content` function gets as argument: the current content
-  of the input-field.  
-  Its return value will be used as the item-literal's HTML-content. E.g.:  
-  ```js
-    itemLiteralContent: function(trimmedSearchStr) {
-      return '<div title="Advanced search">' +
-        `Search for '${trimmedSearchStr}' ▸</div>`;
-    }
-  ```
+- The `custom-item` and `custom-item-literal` functions are described in the
+  "Customized content" section, further below.
 
 <br>
 
@@ -295,17 +288,11 @@ They are easiest to read in the following, bottom-up order:
 
 <br>
 
-### Custom CSS
-
-One can change the look of a `<vsm-autocomplete>` component by overriding
-its internal CSS-classes.  
-As an example, the following 'CSS skin' makes everything a bit larger:
-[`vsm-autocomplete-large.css`](src/vsm-autocomplete-large.css).
-
+## Customized content
 
 <br>
 
-## Customizing ListItem content
+### Custom content for ListItems
 
 The selection-panel items are given a default content like:  
 &nbsp; &nbsp; _`match-string (description) (dictionary-ID)`_,  
@@ -360,10 +347,49 @@ all possible information needed for building a ListItem:
     - `extra`: an extra part that is added at the end of the ListItem,
       and which is empty by default.<br><br>
 
-`customItem()` must return an object like its argument `strs`.  
+`customItem()` must return an Object like its argument `data.strs`.  
 It may simply return the given `strs` object, after directly modifying just
 those properties it needs to.  
 - E.g. `customItem: data => { if (data.item.dictID == 'X')  data.strs.descr += '!';  return data.strs; }`  
   would add a "!" to the description-part of each ListItem from
   subdictionary 'X' (only), and leave these ListItems' other parts unchanged. 
 - If any part is empty, it will be left out of the ListItem.
+
+
+<br>
+
+### Custom content for the ListItemLiteral
+
+The item-literal can be customized by giving a customizing function as the
+**`custom-item-literal`** prop.  
+
+`customItemLiteral()` (if given) is called during the construction of a
+ListItemLiteral.  
+It is called with one argument: an Object with useful properties:  
+`customItemLiteral(data)`:  
+- `data`: {Object}:
+  - `searchStr`: the string that the user typed in TheInput.
+  - `maxStringLengths`: the `max-string-lengths` prop that was set
+    on this `<vsm-autocomplete>`.
+  - `strs`: the default content for the different parts of the ListItemLiteral
+    (similar to `customItem`'s `data.strs`):
+    - `str`: the default (text/HTML) content for the ListItemLiteral, which is:  
+      the content of the input-field, trimmed in length according
+      to `max-string-lengths`.
+    - `strTitle`: its HTML-element's 'title=".."' attribute,
+      which appears on mouse-hover.
+
+`customItemLiteral()` must return an Object like its argument `data.strs`.  
+It may simply return the given `strs` object, after directly modifying just
+those properties it needs to.  
+- E.g. `customItemLiteral: data => { data.strs.strTitle = ''; return data.strs }`  
+  would only remove the item-literal's 'title' attribute.
+
+<br>
+
+### Custom CSS
+
+One can change the look of a `<vsm-autocomplete>` component by overriding
+its CSS-classes.  
+As an example, the following 'CSS skin' makes everything a bit larger:
+[`vsm-autocomplete-large.css`](src/vsm-autocomplete-large.css).

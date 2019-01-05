@@ -39,7 +39,7 @@ describe('sub/TheList', () => {
         maxStringLengths,
         dictInfos,
         /// hasItemLiteral: false,
-        /// itemLiteralContent: false,
+        /// customItemLiteral: false,
         /// customItem: false,
         /// activeIndex: 0,
         /// vsmDictionary: {}
@@ -199,18 +199,19 @@ describe('sub/TheList', () => {
   });
 
 
-  it('passes a `itemLiteralContent` attribute to a ListItemLiteral', () => {
-    var template = '<div title="test">Test: ### ▸</div>';
-
+  it('passes a `customItemLiteral` attribute to a ListItemLiteral', () => {
     var wrap = make({
       items: [],             // } Only create one list-item: a ListItemLiteral.
       hasItemLiteral: true,  // }
       searchStr: '12345678',
       maxStringLengths: { str: 5 },
-      itemLiteralContent: trimmedStr => template.replace('###', trimmedStr)
+      customItemLiteral: data => {
+        data.strs.str = '<sup>T</sup>est: ' + data.strs.str;
+        return data.strs;
+      }
     });
 
     wrap.find('.item').html()
-      .should.contain('<div title="test">Test: 1234… ▸</div>');
+      .should.contain('><sup>T</sup>est: 1234…</');
   });
 });

@@ -36,10 +36,6 @@ function runDemo() {
         str: 2,
         strAndDescr: 40
       },
-      itemLiteralContent: undefined && function(trimmedSearchStr) {
-        return '<div title="Advanced search">' +
-          `Search for '${trimmedSearchStr}' ▸</div>`;
-      },
       customItem: !undefined && function(data) {
         var { item, strs, dictInfo } = data;
         if (item.dictID != 'VAR')  return strs;
@@ -55,6 +51,12 @@ function runDemo() {
           infoTitle: (dictInfo && dictInfo.name ?
             `${ dictInfo.id }: ${ dictInfo.name }` : '')
         });
+      },
+      customItemLiteral: undefined && function(data) {
+        return {
+          strTitle: 'Advanced search',
+          str: 'Search for ' + data.strs.str
+        };
       },
       initialValue: 'tes',
       report: ''

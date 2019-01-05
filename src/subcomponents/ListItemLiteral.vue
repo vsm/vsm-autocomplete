@@ -1,19 +1,11 @@
 <template>
   <div
-    v-if="itemLiteralContent"
+    :title="strs.strTitle"
     @mousemove="onHover"
     @mousedown.left.exact.prevent="onMousedown"
     @click.left.exact="onClick"
-    v-html="sanitize(itemLiteralContent(searchStrTrimmed))"
+    v-html="strs.str"
   />
-  <div
-    v-else
-    :title="`Search for '${searchStr}'`"
-    @mousemove="onHover"
-    @mousedown.left.exact.prevent="onMousedown"
-    @click.left.exact="onClick"
-  >{{ searchStrTrimmed }}<span class="triangle">▸</span>
-  </div>
 </template>
 
 
@@ -38,15 +30,26 @@ export default {
       type: Object,
       required: true
     },
-    itemLiteralContent: {
+    customItemLiteral: {
       type: [Function, Boolean],
       default: false
     }
   },
 
   computed: {
-    searchStrTrimmed() {
-      return stringTrim(this.searchStr, this.maxStringLengths.str);
+    strs() {
+      var strs = {
+        str: stringTrim(this.searchStr, this.maxStringLengths.str),
+        strTitle: `Search for '${ this.searchStr }'`
+      };
+
+      if (this.customItemLiteral)  strs = this.customItemLiteral({
+        searchStr: this.searchStr,  maxStringLengths: this.maxStringLengths,
+        strs
+      });
+
+      strs.str = sanitizeHtml(strs.str);
+      return strs;
     }
   },
 
@@ -54,8 +57,6 @@ export default {
     onHover()     { this.$emit('hover', this.index) },
     onMousedown() { this.$emit('hover', this.index) },  // Ensure 'hover' b4 clk.
     onClick()     { this.$emit('click', this.index) },
-
-    sanitize(str) { return sanitizeHtml(str) }  // Enable template to use this.
   }
 };
 </script>
@@ -69,7 +70,8 @@ export default {
   .item:not(.item-state-active).item-type-literal {
     color: #3b5998;
   }
-  .triangle {
+  .item-type-literal::after {
     margin-left: 4px;
+    content: "▸";
   }
 </style>

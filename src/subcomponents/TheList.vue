@@ -34,7 +34,7 @@
       :search-str="searchStr"
       :index="items.length"
       :max-string-lengths="maxStringLengths"
-      :item-literal-content="itemLiteralContent"
+      :custom-item-literal="customItemLiteral"
       :class="[
         'item',
         'item-type-literal',
@@ -83,7 +83,7 @@ export default {
       type: Boolean,
       default: false
     },
-    itemLiteralContent: {
+    customItemLiteral: {
       type: [Function, Boolean],
       default: false
     },

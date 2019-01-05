@@ -26,7 +26,7 @@
       :max-string-lengths="sanitizedMaxStringLengths"
       :dict-infos="dictInfos"
       :has-item-literal="hasItemLiteral"
-      :item-literal-content="itemLiteralContent"
+      :custom-item-literal="customItemLiteral"
       :custom-item="customItem"
       :active-index="activeIndex"
       :vsm-dictionary="vsmDictionary"
@@ -86,8 +86,8 @@ export default {
         strAndDescr: 70  // Max length of a trimmed-`str` plus its `descr`.
       })
     },
-    itemLiteralContent: {
-      type: [Function, Boolean],  // `function(searchStr) {}`, or `false`.
+    customItemLiteral: {
+      type: [Function, Boolean],  // `function(data) {}`, or `false`.
       default: false              // If false, the default item-literal is used.
     },
     customItem: {
