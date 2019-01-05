@@ -2067,9 +2067,9 @@ describe('VsmAutocomplete', () => {
       _emitLC (2).should.equal(true);
       _emitSel(2).id.should.equal(e3.id);
 
-      // Extra test: after blur+focus, a click opens TheList again;
-      // i.e.: an `item-select` soft-closes TheList.
+      // Extra test: after blur, a click+focus opens TheList again.
       _blur();
+      _input().trigger('click', { button: 0 });
       _focus();
       clock.tick(200);
       _listEx  ().should.equal(true);
