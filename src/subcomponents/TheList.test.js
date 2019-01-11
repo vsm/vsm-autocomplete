@@ -160,6 +160,14 @@ describe('sub/TheList', () => {
   });
 
 
+  it('for a click on TheList itself, e.g. padding between some items: ' +
+     'emits a item-click event, with the active `index`', () => {
+    var wrap = make({ activeIndex: 2 });
+    wrap.trigger('click', { button: 0 });
+    wrap.emitted('item-click')[0][0].should.equal(2);
+  });
+
+
   it('adds all CSS classes correctly to its ListItems', () => {
     // Note: we don't test internal state (like `indexLastFixedItem == 3`), as
     // it may change after refactoring.  We test the state's effect on the HTML.

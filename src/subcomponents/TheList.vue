@@ -1,5 +1,9 @@
 <template>
-  <div class="list">
+  <div
+    class="list"
+    @mousedown.left.exact.prevent="x => x"
+    @click.left.exact="onClick"
+  >
     <!-- Here we add the css-style that determines items' background; while
          in `ListItem`, we add css that determines their text-color/etc -->
     <list-item
@@ -116,6 +120,14 @@ export default {
   methods: {
     isActive(index) {
       return index == this.activeIndex;
+    },
+
+    /**
+     * Handles clicks on TheList itself, e.g. on the space between the
+     * last ListItem and the ListItemLiteral.
+     */
+    onClick() {
+      this.onItemClick(this.activeIndex);
     },
 
     onItemHover(index) { this.$emit('item-hover', index) },
