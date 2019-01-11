@@ -67,7 +67,7 @@ export default {
     padding-left: 11px;
     font-weight: bold;
   }
-  .item:not(.item-state-active).item-type-literal {
+  .item.item-type-literal {
     color: #3b5998;
   }
   .item-type-literal::after {

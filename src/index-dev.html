@@ -55,27 +55,32 @@
   </div>
 
 
+  <!-- One can apply CSS-styling to/around a vsm-autocomplete, like:
+       (add/remove a '>' to toggle the HTML-comment on/off) :
+  --
   <style>
-    /* One can apply CSS-styling to/around a vsm-autocomplete, like: */
     .vsm-autocomplete {
       width: 200px;
       padding: 0 4px 0 0;
       background-color: #f4f4f4;
       border: 1px solid #ddd;
     }
+  </style>  <!-- -->
 
 
-    /* One can also change vsm-autocomplete subcomponents' style. For example,
-       this makes a non-active item-literal's text dark-grey: * /
+  <!-- One can also change vsm-autocomplete subcomponents' style. For example,
+       this makes a non-active item-literal's text dark-red:
+  --
+  <style>
     .vsm-autocomplete .item:not(.item-state-active).item-type-literal {
-      color: #333;
-    }  /* */
-  </style>
+      color: #800;
+    }
+  </style>  <!-- -->
 
 
   <!-- One can also override vsm-autocomplete's CSS-styles,
        by declaring CSS _after_ the Vue-activated '#app' div.
-       E.g. make it larger with this:  (add/remove a '>' char to toggle) :
+       E.g. make it larger with this:
   --
   <link rel="stylesheet" href="vsm-autocomplete-large.css">  <!-- -->
 

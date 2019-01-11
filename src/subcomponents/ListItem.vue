@@ -188,14 +188,13 @@ export default {
     padding-left: 4px;
   }
 
-  /* These `not:`-selectors will leave the item's text white when it's active */
-  .item:not(.item-state-active) > .item-part-str {
+  .item > .item-part-str {
     color: #3b5998;
   }
-  .item:not(.item-state-active) > .item-part-descr {
+  .item > .item-part-descr {
     color: #222;
   }
-  .item:not(.item-state-active) > .item-part-info {
+  .item > .item-part-info {
     color: #aaa;
   }
 </style>

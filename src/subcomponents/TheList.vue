@@ -176,8 +176,13 @@ export default {
   }
 
   .item-state-active {
-    color: #fff;
-    background-color: #6d84b4;
-    border-color: #3b5998;
+    background-color: #e8ecf5;
+    border-color: #dfe4f2;
+  }
+
+  .item-type-literal.item-state-active {
+    background-color: #e3e8f3;
+    border-top-color: #d1d8eb;
+    border-bottom-color: #e3e8f3;
   }
 </style>
