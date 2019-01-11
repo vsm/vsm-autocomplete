@@ -56,6 +56,10 @@ export default {
       type: Object,
       required: true
     },
+    queryOptions: {
+      type: Object,
+      default: () => ({})
+    },
     customItem: {
       type: [Function, Boolean],
       default: false
@@ -133,8 +137,8 @@ export default {
 
       if (this.customItem)  strs = this.customItem({
         item: this.item,  searchStr: this.searchStr,
-        maxStringLengths: this.maxStringLengths,  dictInfo: this.dictInfo,
-        vsmDictionary: this.vsmDictionary,  strs
+        maxStringLengths: this.maxStringLengths, queryOptions: this.queryOptions,
+        dictInfo: this.dictInfo,  vsmDictionary: this.vsmDictionary,  strs
       });
 
       // Now we can make empty title-attrs `false`, so Vue won't add them.

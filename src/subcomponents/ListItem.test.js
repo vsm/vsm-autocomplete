@@ -54,6 +54,7 @@ describe('sub/ListItem', () => {
         /// searchStr: '',
         item,
         maxStringLengths,
+        /// queryOptions: {},
         /// customItem: false,
         /// dictInfo,
         /// vsmDictionary: {}

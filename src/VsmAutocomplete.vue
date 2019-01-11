@@ -24,6 +24,7 @@
       :search-str="activeSearchStr || ''"
       :items="matches"
       :max-string-lengths="sanitizedMaxStringLengths"
+      :query-options="queryOptions2"
       :dict-infos="dictInfos"
       :has-item-literal="hasItemLiteral"
       :custom-item-literal="customItemLiteral"
@@ -116,12 +117,15 @@ export default {
       return this.inputStr.trim();
     },
 
+    /**
+     * The actually-used `queryOptions`. Prevents querying any z-object fields,
+     * if there is no `customItem()` to use that data.
+     */
     queryOptions2() {
-      // The actually-used `queryOptions`. Prevents querying any z-object fields,
-      // if there is no `customItem()` to use that data.
       return this.customItem ? this.queryOptions :
         Object.assign({}, this.queryOptions, { z: [] });
     },
+
 
     hasItemLiteral() {
       // TheList only gets a special 'item-literal' at the end,

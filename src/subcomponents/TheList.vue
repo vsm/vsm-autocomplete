@@ -9,6 +9,7 @@
       :item="item"
       :key="item.id + item.str"
       :max-string-lengths="maxStringLengths"
+      :query-options="queryOptions"
       :custom-item="customItem"
       :dict-info="dictInfos[item.dictID]"
       :vsm-dictionary="vsmDictionary"
@@ -72,6 +73,10 @@ export default {
     maxStringLengths: {  // Default value is defined in VsmAutocomplete.vue.
       type: Object,
       required: true
+    },
+    queryOptions: {
+      type: Object,
+      default: () => ({})
     },
     // Note: TheList receives `dictInfos` as an ID-based Map, {id: {id:, name:}},
     // not as an Array that is returned by a VsmDictionary.

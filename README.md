@@ -185,7 +185,7 @@ autocomplete selection-list.
 | autofocus            | Boolean           |          | false   | When `true`, automatically focuses the input-field at page load |
 | placeholder          | String\|Boolean   |          | false   | &bull; String: shows this placeholder message in an empty input-field \|<br>&bull; false/absent: adds none |
 | initial-value        | String            |          | ''      | The initial content for the input-field |
-| query-options        | Object            |          | { perPage: 20 } | This is sent along with calls to `vsmDictionary.getMatchesForString()` |
+| query-options        | Object            |          | { perPage: 20 } | Options for filters, fixedTerms, etc., sent along with calls to `vsmDictionary.getMatchesForString()` |
 | max-string-lengths   | Object            |          | { str: 40, strAndDescr: 70 } | Limits the length of matches' `str` and `descr` shown in  list-items<br>(in number of characters) |
 | custom-item          | Function\|Boolean |          | false   | &bull; Function: returns HTML-content for each part of normal list-items (see below) \|<br>&bull; false/absent: default content is used |
 | custom-item-literal  | Function\|Boolean |          | false   | &bull; Function: returns HTML-content (see below) for the item-literal \|<br>&bull; false/absent: the default item-literal is used |
@@ -311,7 +311,7 @@ more quickly distinguish between identically named matches.<br><br>
 
 `customItem()` (if given) is called during the construction of each ListItem.  
 It is called with one argument: an Object with useful properties, representing
-all possible information needed for building a ListItem:
+useful information for building a custom ListItem:
 `customItem(data)`:  
 - `data`: {Object}:
   - `item`: the complete 'match'-object that this ListItem represents.
@@ -320,6 +320,12 @@ all possible information needed for building a ListItem:
   - `searchStr`: the string that the user typed to find this match.
   - `maxStringLengths`: the `max-string-lengths` prop that was set
     on this `<vsm-autocomplete>`.
+  - `queryOptions`: the prop `query-options` that was set
+    on this `<vsm-autocomplete>`.  
+    (Use case: by evaluating `queryOptions.filter.dictIDs[]`, a multi-purpose
+    customization function could detect if this particular autocomplete is
+    combining gene-IDs from multiple species, and if so, add an icon (image of
+    the species) in front of gene-names for clarity).
   - `dictInfo`: the info-object of the subdictionary
     from which this match came (which contains `customItem()`).
   - `vsmDictionary`: the VsmDictionary instance being used.  

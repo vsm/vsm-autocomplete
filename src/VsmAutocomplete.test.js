@@ -446,9 +446,15 @@ describe('VsmAutocomplete', () => {
     it('lets prop `customItem` modify the content of a ListItem', cb => {
       w = make({
         initialValue: 'x',   // Matches both `e4` and `e6`.
+        maxStringLengths: { str: 50 },
+        queryOptions: { perPage: 5 },
         customItem: data =>  // Updates 'item-part-str' only for dictID=='C'.
           data.item.dictID != 'C' ? data.strs :
-            Object.assign(data.strs, { str: `--${data.strs.str}--` })
+            Object.assign(data.strs, { str:
+              `---${data.item.id}-${data.maxStringLengths.str}` +
+              `---${data.queryOptions.perPage}-${data.searchStr}` +
+              `---${data.dictInfo.id}-${data.strs.str}---`
+            })
       });
       _focus();
       clock.tick(300);
@@ -456,7 +462,7 @@ describe('VsmAutocomplete', () => {
       vueTick(() => {
         _listLen() .should.equal(3);
         _itemPST(0).should.equal('x');
-        _itemPST(1).should.equal('--xyz--');
+        _itemPST(1).should.equal('---C:01-50---5-x---C-xyz---');
         cb();
       });
     });

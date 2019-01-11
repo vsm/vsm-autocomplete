@@ -37,6 +37,7 @@ describe('sub/TheList', () => {
         /// searchStr: '',
         items,
         maxStringLengths,
+        /// queryOptions: {},
         dictInfos,
         /// hasItemLiteral: false,
         /// customItemLiteral: false,
@@ -112,6 +113,7 @@ describe('sub/TheList', () => {
       { items: [item4],
         dictInfos: dictInfos,
         maxStringLengths: msLengths2,
+        queryOptions: { filter: { dictIDs: ['D01', 'D05'] } },
         customItem: customItem,
         searchStr: 'ab',
         vsmDictionary: vsmDict2 });
@@ -121,6 +123,7 @@ describe('sub/TheList', () => {
       item: item4,
       searchStr: 'ab',
       maxStringLengths: msLengths2,
+      queryOptions: { filter: { dictIDs: ['D01', 'D05'] } },
       dictInfo: dictInfos[item4.dictID],
       vsmDictionary: vsmDict2,
       strs: {
