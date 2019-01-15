@@ -36,27 +36,33 @@ function runDemo() {
         str: 2,
         strAndDescr: 40
       },
-      customItem: !undefined && function(data) {
-        var { item, strs, dictInfo } = data;
-        if (item.dictID != 'VAR')  return strs;
-        var synonyms = item.terms && item.terms.length > 1 ?
-          item.terms.map(termObj => termObj.str).join(', ') : '';
-        return Object.assign(strs, {
-          str:
-            `${ strs.str } &nbsp;` +
-            '<span style="color: #000; font-weight: normal;">' +
-            `${ item.z && item.z.extraChar ? item.z.extraChar : '' }☘</span>`,
-          descr: (synonyms ? `<i>=${ synonyms };</i>&nbsp; ` : '') + strs.descr,
-          info: item.id,
-          infoTitle: (dictInfo && dictInfo.name ?
-            `${ dictInfo.id }: ${ dictInfo.name }` : '')
-        });
+      customItem: !false && function(o) {
+        var { item, strs, dictInfo } = o;
+        var span = s => '<span style="color: #000; ' +
+          'font-weight: normal; margin-left: 1ch;">' + s + '</span>';
+        if (item.dictID == 'uri://x/BIO') {
+          strs.str += span('☘');
+        }
+        else if (item.dictID == 'VAR') {
+          var synonyms = item.terms && item.terms.length > 1 ?
+            item.terms.map(termObj => termObj.str).join(', ') : '';
+          return Object.assign(strs, {
+            str: strs.str +
+              `${ item.z && item.z.extraChar ? span(item.z.extraChar): '' }`,
+            descr:
+              (synonyms ? `<i>=${ synonyms };</i>&nbsp; ` : '') + strs.descr,
+            info: item.id,
+            infoTitle: (dictInfo && dictInfo.name ?
+              `${ dictInfo.id } : ${ dictInfo.name }` : '')
+          });
+        }
+        return strs;
       },
-      customItemLiteral: undefined && function(data) {
-        return {
-          strTitle: 'Advanced search',
-          str: 'Search for ' + data.strs.str
-        };
+      customItemLiteral: false && function(o) {
+        return Object.assign(o.strs, {
+          strTitle: 'Search more',
+          str: 'Search for ' + o.strs.str
+        });
       },
       initialValue: 'tes',
       report: ''
@@ -131,7 +137,7 @@ function runDemo() {
 function createData() {
   return {
     dictData: [
-      { id: 'CW',  name: 'Common words', entries: [
+      { id: 'CW',  abbrev: 'CW',  name: 'Common words',  entries: [
         { id: 'CW:0045', terms: [{str: 'about'}] },
         { id: 'CW:0082', terms: [{str: 'after'}] },
         { id: 'CW:0036', terms: [{str: 'all'}] },
@@ -207,8 +213,8 @@ function createData() {
           {str: 'accompanied by'},
           {str: 'to be accompanied by'}
         ]},
-        { id: 'CW:0020',  descr: 'associated with', terms: [{str: 'at'}] },
-        { id: 'CW:0007',   descr: 'to be located in', terms: [
+        { id: 'CW:0020', descr: 'associated with', terms: [{str: 'at'}] },
+        { id: 'CW:0007', descr: 'to be located in', terms: [
           {str: 'in', style: ''}, {str: 'is located in'}, {str: 'located in'},
           {str: 'located at'}, {str: 'at'} ]
           ///, {str: 'locatedness-inside', style: 'i'}
@@ -219,12 +225,12 @@ function createData() {
           terms: [{str: 'at', descr: 'happens at timepoint'}] },
         { id: 'CW:0111', descr: 'to pertain to',
           terms: [{str: 'in', descr: 'pertains to'}] },
-        { id: 'CW:0005',   descr: 'List, plain collection of items',
+        { id: 'CW:0005', descr: 'List, plain collection of items',
           terms: [{str: 'and'}]
         },
         { id: 'CW:0112', descr: 'List where item order is important',
           terms: [{str: 'ordered-and', style: 'i0-8'}] },
-        { id: 'CW:0002',   descr: 'to be',
+        { id: 'CW:0002', descr: 'to be',
           terms: [
             {str: 'to be'},
             {str: 'being'},
@@ -252,7 +258,7 @@ function createData() {
         },
       ]},
 
-      { id: 'PRS', name: 'Persons', entries: [
+      { id: 'PRSNS', abbrev: 'PRS', name: 'Persons', entries: [
         { id: 'PRS:0004', terms: [{str: 'Brown'}] },
         { id: 'PRS:0020', terms: [{str: 'Clarke'}] },
         { id: 'PRS:0008', terms: [{str: 'Davis'}] },
@@ -281,7 +287,7 @@ function createData() {
           terms: [{str: 'Steven'}] },
       ]},
 
-      { id: 'BIO', name: 'Biological concepts', entries: [
+      { id: 'uri://x/BIO', name: 'Biological concepts', entries: [
         { id:'BIO:0010', terms: [{str: 'Ca2+', style: 'u2-4'}] },
         { id:'BIO:0011', terms: [{str: 'Na+Cl-', style: 'u2;u5'}] },
         { id:'BIO:0001', terms: [{str: 'beta-Carotene'}, {str: 'β-Carotene'}] },
@@ -292,7 +298,7 @@ function createData() {
         },
         { id:'BIO:0903', descr: 'the Mouse gene cdc2', terms: [{str: 'cdc2'}] },
         { id:'BIO:0014',
-          descr: 'to activate (= the activation of) a molecule, by some actor',
+          descr: 'To activate (= the activation of) a molecule, by some actor',
           terms: [
             {str: 'activates'},
             {str: 'activation'},
@@ -329,7 +335,7 @@ function createData() {
           terms: [{str: 'twisted'}] },
       ]},
 
-      { id: 'VAR', name: 'Various concepts',
+      { id: 'VAR', abbrev: 'VAR', name: 'Various concepts',
         entries: [
           { id: 'VAR:0015', descr: 'Computer science, Information Technology',
             terms: [{str: 'IT'}] },
