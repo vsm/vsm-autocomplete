@@ -1,6 +1,6 @@
 {
   "name": "vsm-autocomplete",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Vue-component for term+ID lookup based on a vsm-dictionary",
   "main": "src/VsmAutocomplete.vue",
   "scripts": {
@@ -58,10 +58,10 @@
     "text-transform-loader": "^2.0.0",
     "vsm-dictionary-cacher": "^1.1.2",
     "vsm-dictionary-local": "^2.5.0",
-    "vue": "^2.5.21",
+    "vue": "^2.5.22",
     "vue-custom-element": "^3.2.6",
     "vue-loader": "^15.5.1",
-    "vue-template-compiler": "^2.5.21",
+    "vue-template-compiler": "^2.5.22",
     "webpack": "^4.28.4",
     "webpack-cli": "^3.2.1",
     "webpack-dev-server": "^3.1.14",

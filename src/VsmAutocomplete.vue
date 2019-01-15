@@ -18,6 +18,7 @@
       @key-tab="onKeyTab"
       @click="onInputClick"
       @dblclick="onInputDblclick"
+      @mouseover.native="onInputHover"
     />
     <the-list
       v-if="isListOpen"
@@ -465,6 +466,10 @@ export default {
     onInputDblclick() {
       this.closeList();
       this.$emit('dblclick');
+    },
+
+    onInputHover() {
+      this.$emit('mouseover-input');
     },
 
     onItemHover(index) {

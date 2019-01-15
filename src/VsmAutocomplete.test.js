@@ -167,6 +167,7 @@ describe('VsmAutocomplete', () => {
   const _emitSEnt = index => _emit (index, 'key-shift-enter');
   const _emitTab  = index => _emitV(index, 'key-tab');
   const _emitDblc = index => _emit (index, 'dblclick');
+  const _emitOvIn = index => _emit (index, 'mouseover-input');
 
 
   // Shorthand test functions.
@@ -3165,6 +3166,22 @@ describe('VsmAutocomplete', () => {
 
       clock.tick(1000);  // Move beyond time 800, when result #1 has arrived too.
       _itemPST(0).should.equal('bcd');  // Stale result #1 did not change item 1.
+    });
+
+
+    it('on mouseover on TheInput, but not TheList, ' +
+       'emits `mouseover-input`', cb => {
+      w = make({ queryOptions: { idts: [{ id: 'B:03' }] } });
+      _focus();
+      clock.tick(300);
+      _listEx().should.equal(true);
+
+      _list ().trigger('mouseover');
+      _emitOvIn(0).should.equal(false);
+
+      _input().trigger('mouseover');
+      _emitOvIn(0).should.equal(true);
+      cb();
     });
   });
 
