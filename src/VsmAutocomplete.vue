@@ -88,6 +88,10 @@ export default {
         strAndDescr: 70  // Max length of a trimmed-`str` plus its `descr`.
       })
     },
+    freshListDelay: {
+      type: Number,
+      default: 0
+    },
     customItemLiteral: {
       type: [Function, Boolean],  // `function(data) {}`, or `false`.
       default: false              // If false, the default item-literal is used.
@@ -405,6 +409,7 @@ export default {
 
       this.matches = err ? [] : matches;  // This updates TheList.
       this.activeSearchStr = queryStr;    // This stops TheSpinner.
+      this.lastFreshListTime = Date.now();
     },
 
     openFreshList() {  // Opens TheList if not stale; else resets it and makes..
@@ -479,8 +484,13 @@ export default {
       this.selectItem(index);
     },
 
+    isListTooFresh() {
+      return Date.now() - this.lastFreshListTime < this.freshListDelay;
+    },
+
     selectItem(index) {
-      if (this.isListStale)  return; // No action on a list that'll be replaced.
+      // No action on a list that will be replaced, or appeared too recently to..
+      if (this.isListStale || this.isListTooFresh()) return; // ..have been seen.
       this.closeList();
 
       if (this.hasItemLiteral  &&  index == this.listLength - 1) {

@@ -36,6 +36,7 @@ function runDemo() {
         str: 2,
         strAndDescr: 40
       },
+      freshListDelay: 150,
       customItem: !false && function(o) {
         var { item, strs, dictInfo } = o;
         var span = s => '<span style="color: #000; ' +

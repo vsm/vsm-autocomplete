@@ -187,6 +187,7 @@ autocomplete selection-list.
 | initial-value        | String            |          | ''      | The initial content for the input-field |
 | query-options        | Object            |          | { perPage: 20 } | Options for filters, fixedTerms, etc., sent along with calls to `vsmDictionary.getMatchesForString()` |
 | max-string-lengths   | Object            |          | { str: 40, strAndDescr: 70 } | Limits the length of matches' `str` and `descr` shown in  list-items<br>(in number of characters) |
+| fresh-list-delay     | Number            |          | 0       | Prevents selection of matches in the list, until this amount of milliseconds has passed |
 | custom-item          | Function\|Boolean |          | false   | &bull; Function: returns HTML-content for each part of normal list-items (see below) \|<br>&bull; false/absent: default content is used |
 | custom-item-literal  | Function\|Boolean |          | false   | &bull; Function: returns HTML-content (see below) for the item-literal \|<br>&bull; false/absent: the default item-literal is used |
 
@@ -202,6 +203,17 @@ autocomplete selection-list.
   that makes them visually distinct.
 - The `max-string-lengths`'s `strAndDescr` sets the maximum length
   of an already length-trimmed `str`, plus its `descr`.
+- When a selection-list shows stale results (meaning that the list is expected
+  to be replaced with fresh results soon), then it will not respond to Enter
+  or Click until the new results appear.  
+  But if a user decides to Enter/Click on stale results anyway, and the list
+  would update with new results shortly before that Enter actually comes through,
+  then the Enter would select a different list-item than intended:
+  an item that freshly appeared there in a new list; and perhaps the user
+  would not even notice that a different item was selected.  
+  Therefore, by setting a `fresh-list-delay` (of e.g. a few 100 milliseconds),
+  one can delay when the list starts to respond, and prevent an impatient user
+  from mistakenly Entering/selecting an item that only just appeared.
 - The `custom-item` and `custom-item-literal` functions are described in the
   "Customized content" section, further below.
 

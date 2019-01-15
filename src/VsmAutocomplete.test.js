@@ -13,7 +13,7 @@ describe('VsmAutocomplete', () => {
 
   // --- 1/5) CREATE A TEST-VsmDictionary ---
 
-  // DictInfo/entriy/refTerm-data, for a test-VsmDictionaryLocal.
+  // DictInfo/entry/refTerm-data, for a test-VsmDictionaryLocal.
   const di1 = { id: 'A', name: 'Name 1' };
   const di2 = { id: 'B', name: 'Name 2' };
   const di3 = { id: 'C', name: 'Name 3' };
@@ -784,6 +784,28 @@ describe('VsmAutocomplete', () => {
       _item(0).classes().should.contain('item-state-active');
       // expect(w.emitted('item-active-change')).to.equal(undefined);  // ..:
       _emitIAC().should.equal(0);           // This is shorthand for line above.
+    });
+
+
+    it('ignores Enter if TheList has been opened less than prop ' +
+       '`freshListDelay` ms ago ', cb => {
+      w = make({ initialValue: 'ab', queryOptions: qoFT, freshListDelay: 1000 });
+      _focus();
+      clock.tick(300);
+      _listEx().should.equal(true);
+
+      _keyEnter();
+      _listEx().should.equal(true);
+      clock.tick(999);
+      _keyEnter();
+      _listEx().should.equal(true);
+      _emitSel().should.equal(0);
+
+      clock.tick(1);
+      _keyEnter();
+      _listEx().should.equal(false);
+      _emitSel().id.should.deep.equal(e2.id);
+      cb();
     });
   });
 
