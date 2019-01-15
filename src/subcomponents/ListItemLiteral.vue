@@ -2,7 +2,7 @@
   <div
     :title="strs.strTitle"
     @mousemove="onHover"
-    @mousedown.left.exact.prevent="onMousedown"
+    @mousedown.prevent="onMousedown"
     @click.left.exact="onClick"
     v-html="strs.str"
   />

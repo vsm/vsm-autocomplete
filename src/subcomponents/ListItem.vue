@@ -1,7 +1,7 @@
 <template>
   <div
     @mousemove="onHover"
-    @mousedown.left.exact.prevent="onMousedown"
+    @mousedown.prevent="onMousedown"
     @click.left.exact="onClick"
   >
     <span
