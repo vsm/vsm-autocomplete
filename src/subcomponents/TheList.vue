@@ -147,7 +147,7 @@ export default {
     line-height: 14px;  /* Prevents special chars from making ListItems higher. */
     cursor: default;
     background-color: #fff;
-    border: 1px solid #c4c4c4;
+    border: 1px solid #999;
   }
   .item {
     padding: 2px 3px 3px 4px;
@@ -181,19 +181,18 @@ export default {
     border-bottom-color: #ddd;
   }
   .item-type-literal {
-    background-color: #f2f2f2;
+    background-color: #fcfcfc;
     border-top-color: #ddd;
-    border-bottom-color: #f2f2f2;
+    border-bottom-color: #fcfcfc;
   }
-
   .item-state-active {
-    background-color: #e3e8f3;
+    background-color: #e6ebf4;
     border-color: #ced6ea;
   }
 
   .item-type-literal.item-state-active {
-    background-color: #dce3f0;
+    background-color: #e6ebf4;
     border-top-color: #c9d1e7;
-    border-bottom-color: #dce3f0;
+    border-bottom-color: #e6ebf4;
   }
 </style>

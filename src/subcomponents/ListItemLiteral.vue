@@ -68,7 +68,7 @@ export default {
     font-weight: bold;
   }
   .item.item-type-literal {
-    color: #3b5998;
+    color: #929292;
   }
   .item-type-literal::after {
     margin-left: 4px;
