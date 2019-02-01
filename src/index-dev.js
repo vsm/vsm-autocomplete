@@ -25,7 +25,7 @@ function runDemo() {
       'vsm-autocomplete': VsmAutocomplete
     },
 
-    data : {
+    data: function() { return {
       vsmDictionary: dict,
       placeholder: 'Enter a term here',  //false,
       queryOptions: {
@@ -67,7 +67,7 @@ function runDemo() {
       },
       initialValue: 'tes',
       report: ''
-    },
+    }; },
 
     computed: {
     },
