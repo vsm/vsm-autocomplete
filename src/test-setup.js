@@ -4,6 +4,9 @@
 // Add JSDOM: a browser environment for Node, so that vue-test-utils can run.
 require('jsdom-global')();
 
+// Temporary workaround for: https://github.com/vuejs/vue-test-utils/issues/936 .
+window.Date = Date;
+
 
 // Prevent Vue warning, and make `Vue` globally available.
 const Vue = require('vue');

@@ -1,6 +1,6 @@
 {
   "name": "vsm-autocomplete",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "Vue-component for term+ID lookup based on a vsm-dictionary",
   "main": "src/VsmAutocomplete.vue",
   "scripts": {
@@ -38,8 +38,8 @@
     "chai": "^4.2.0",
     "css-loader": "^1.0.1",
     "document-register-element": "^1.13.1",
-    "eslint": "^5.12.0",
-    "eslint-loader": "^2.1.1",
+    "eslint": "^5.13.0",
+    "eslint-loader": "^2.1.2",
     "eslint-plugin-vue": "^4.7.1",
     "html-webpack-plugin": "^3.2.0",
     "jsdom": "^12.2.0",
@@ -51,7 +51,7 @@
     "opn-cli": "^3.1.0",
     "sinon": "^6.3.5",
     "style-loader": "^0.23.1",
-    "stylelint": "^9.9.0",
+    "stylelint": "^9.10.1",
     "stylelint-config-recess-order": "^2.0.1",
     "stylelint-config-standard": "^18.2.0",
     "stylelint-webpack-plugin": "^0.10.5",

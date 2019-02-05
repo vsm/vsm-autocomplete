@@ -8,10 +8,10 @@
          in `ListItem`, we add css that determines their text-color/etc -->
     <list-item
       v-for="(item, index) in items"
+      :key="item.id + item.str"
       :search-str="searchStr"
       :index="index"
       :item="item"
-      :key="item.id + item.str"
       :max-string-lengths="maxStringLengths"
       :query-options="queryOptions"
       :custom-item="customItem"

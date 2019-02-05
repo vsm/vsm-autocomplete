@@ -1,10 +1,10 @@
 <template>
   <input
     ref="input"
+    v-model="str"
     :placeholder="realPlaceholder"
     :autofocus="autofocus"
     :class="['input', { 'error': showError }]"
-    v-model="str"
     spellcheck="false"
     @focus="onFocus"
     @blur="onBlur"

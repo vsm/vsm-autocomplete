@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <div class="spinner"/>
+    <div class="spinner" />
   </transition>
 </template>
 

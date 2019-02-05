@@ -29,5 +29,6 @@ module.exports = {
     'arrow-parens': ['error', 'as-needed'],
     'no-console': 'off',
     'keyword-spacing': 'error',
+    'vue/no-v-html': 'off'
   }
 };
