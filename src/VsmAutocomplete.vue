@@ -444,13 +444,16 @@ export default {
       else this.openFreshList();
     },
 
-    onKeyBksp() {
+    onKeyBksp(event) {
       // If bksp on a whitespace-only input, with cursor at start: make & then..
       if (this.inputStr && !this.searchStr &&            // ..treat it as empty.
         !this.$refs.theInput.input.selectionStart)  this.inputStr = '';
 
-      if (!this.inputStr) {
-        this.closeList();  // Close list on Bksp on already-empty input.
+      if (!this.inputStr) {  // == "Is the Bksp on an already-empty input?".
+        this.closeList();
+        event.preventDefault(); // Cancel the Bksp-event, in case a 'key-bksp'-..
+        //    // ..listener (like vsm-box) makes Vue reuse the <input> and fill..
+        //    // ..it with new text. =>Its last char should not get Bksp-removed.
         this.$emit('key-bksp');
       }
     },

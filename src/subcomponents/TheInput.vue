@@ -119,7 +119,7 @@ export default {
     onKeyDown () { this.$emit('key-down' ) },
     onKeyEsc  () { this.$emit('key-esc'  ) },
     onKeyEnter() { this.$emit('key-enter') },
-    onKeyBksp () { this.$emit('key-bksp' ) },
+    onKeyBksp    (event) { this.$emit('key-bksp',         event) },
     onKeyTab     (event) { this.$emit('key-tab', '',      event) },
     onKeyShiftTab(event) { this.$emit('key-tab', 'shift', event) },
     onKeyCtrlEnter()     { this.$emit('key-ctrl-enter') },

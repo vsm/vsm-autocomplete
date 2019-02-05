@@ -130,6 +130,7 @@ describe('sub/TheInput', () => {
     wrap.emitted('dblclick').should.not.equal(undefined);
   });
 
+
   it('emits events for keys: up, down, esc, enter, bksp, tab, ' +
      'shift+tab, ctrl+enter, shift+enter', () => {
     var wrap = make({});
@@ -144,27 +145,24 @@ describe('sub/TheInput', () => {
     wrap.trigger('keydown.enter', { ctrlKey: true });
     wrap.trigger('keydown.enter', { shiftKey: true });
 
-    // See https://vue-test-utils.vuejs.org/api/wrapper/#emittedbyorder
-    wrap.emittedByOrder().map(e => !e.args.length ? e.name : [e.name, e.args[0]])
-      .should.deep.equal([
-        'key-up',
-        'key-down',
-        'key-esc',
-        'key-enter',
-        'key-bksp',
-        ['key-tab', ''],
-        ['key-tab', 'shift'],
-        'key-ctrl-enter',
-        'key-shift-enter'
-      ]);
+    wrap.emittedByOrder().map(
+      e => e.name == 'key-tab' ? [e.name, e.args[0]] : e.name
+    ).should.deep.equal([
+      'key-up',
+      'key-down',
+      'key-esc',
+      'key-enter',
+      'key-bksp',
+      ['key-tab', ''],
+      ['key-tab', 'shift'],
+      'key-ctrl-enter',
+      'key-shift-enter'
+    ]);
 
-    /*// Note: without `emittedByOrder()`, we'd have to take this into account:
-      wrap.trigger('keydown.tab');
-      wrap.emitted('key-tab')[0][0].should.equal('');
-
-      wrap.trigger('keydown.tab', { shiftKey: true });
-      wrap.emitted('key-tab')[1][0].should.equal('shift');  // 2nd emit!
-    */
+    // Shallow-test that key-bksp/tab emit an `event` Object too.
+    wrap.emitted('key-bksp')[0].length.should.equal(1);  // 1: one argument,
+    wrap.emitted('key-tab' )[0].length.should.equal(2);  // [0]: 1st emit.
+    wrap.emitted('key-tab' )[1].length.should.equal(2);  // [1]: 2nd emit.
   });
 
 
