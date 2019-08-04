@@ -698,6 +698,19 @@ describe('VsmAutocomplete', () => {
     });
 
 
+    it('overrides `queryOptions.page` with 1', () => {
+      w = make({ initialValue: 'b', queryOptions: { perPage: 1, page: 1 }}, {});
+      _focus();
+      clock.tick(300);
+      _itemPST(0).should.equal('bc');
+
+      w = make({ initialValue: 'b', queryOptions: { perPage: 1, page: 2 }}, {});
+      _focus();
+      clock.tick(300);
+      _itemPST(0).should.equal('bc');  // Not 'bcc'. So it queried page 1, OK.
+    });
+
+
     it('uses `maxStringLengths`', () => {
       w = make({ initialValue: 'bcd' });  // Matches `e4`.
       _focus();

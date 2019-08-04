@@ -123,12 +123,15 @@ export default {
     },
 
     /**
-     * The actually-used `queryOptions`. Prevents querying any z-object fields,
-     * if there is no `customItem()` to use that data.
+     * The actually-used `queryOptions`. Enforces querying of result page nr 1.
+     * Prevents querying z-object data if there is no `customItem()` to use it.
      */
     queryOptions2() {
-      return this.customItem ? this.queryOptions :
-        Object.assign({}, this.queryOptions, { z: [] });
+      return Object.assign({},
+        this.queryOptions,
+        { page: 1 },
+        this.customItem ? {} : { z: [] }
+      );
     },
 
 
