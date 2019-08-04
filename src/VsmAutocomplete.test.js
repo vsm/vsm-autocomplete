@@ -95,6 +95,9 @@ describe('VsmAutocomplete', () => {
   const _inputV  = () => _input().element.value;
   const _inputA  = () => _input().attributes();
 
+  const _label   = () => w.find('.label');
+  const _labelT  = () => _label().text();
+
   const _list    = () => w.find('.list');
   const _listEx  = () => _list().exists();
 
@@ -250,10 +253,10 @@ describe('VsmAutocomplete', () => {
       // Note: _input () === w.find('.input') ;
       //       _inputA() === w.find('.input').attributes() ;
       //       _inputV() === w.find('.input').element.value ; etc.
-      expect(_inputA().placeholder).to.equal(undefined);
-      expect(_inputA().autofocus  ).to.equal(undefined);
+      expect(_inputA().autofocus).to.equal(undefined);
       _inputV().should.equal('');
       _input ().classes().should.not.contain('error');
+      _labelT().should.equal('');
 
       _list   ().exists().should.equal(false);
       _spinner().exists().should.equal(false);
@@ -288,24 +291,11 @@ describe('VsmAutocomplete', () => {
 
     it('uses the `placeholder` prop', () => {
       w = make({ placeholder: false });
-      expect(_inputA().placeholder).to.equal(undefined);
+      _labelT().should.equal('');
 
       w = make({ placeholder: 'plc' });
-      _inputA().placeholder.should.equal('plc');
+      _labelT().should.equal('plc');
       _inputV().should.equal('');  // TheInput should stay empty.
-    });
-
-
-    it('hides the placeholder when TheInput gets focused, ' +
-       'and puts it back when it gets blurred', () => {
-      w = make({ placeholder: 'plc' });
-      _inputA().placeholder.should.equal('plc');
-
-      _input().trigger('focus');
-      expect(_inputA().placeholder).to.equal(undefined);
-
-      _input().trigger('blur');
-      _inputA().placeholder.should.equal('plc');
     });
 
 
@@ -486,7 +476,7 @@ describe('VsmAutocomplete', () => {
       _focus();
       clock.tick(300);
       vueTick(() => {
-        optFT.should.deep.equal({ idts: [{ id: 'B:03' }], z: [] });
+        optFT.should.deep.equal({ idts: [{ id: 'B:03' }], page: 1, z: [] });
         optGM.should.deep.equal(optFT);
 
         // Part 2: test with a `customItem()` => it uses original `queryOptions`.
@@ -499,7 +489,7 @@ describe('VsmAutocomplete', () => {
         _focus();
         clock.tick(300);
         vueTick(() => {
-          optFT.should.deep.equal({ idts: [{ id: 'B:03' }] });  // No `z` added.
+          optFT.should.deep.equal({ idts: [{ id: 'B:03' }], page:1 }); // No `z`.
           optGM.should.deep.equal(optFT);
           cb();
         });

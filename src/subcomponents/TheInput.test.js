@@ -3,9 +3,15 @@ import TheInput from './TheInput.vue';
 
 
 describe('sub/TheInput', () => {
+  var w;
 
   // A function for creating a test-component with custom props.
-  const make = props => shallowMount(TheInput, { propsData: props });
+  const make = props => w = shallowMount(TheInput, { propsData: props });
+
+  const _input  = () => w.find('.input');
+  const _inputA = () => _input().attributes();
+  const _label  = () => w.find('.label');
+  const _labelV = () => _label().text();
 
 
   it('initializes when given no props', () => {
@@ -17,135 +23,136 @@ describe('sub/TheInput', () => {
         /// value: ''
       }
     });
-    expect(wrap.attributes().placeholder).to.equal(undefined);
-    expect(wrap.attributes().autofocus  ).to.equal(undefined);
-    wrap.classes().should.not.contain('error');
-    wrap.attributes().spellcheck.should.equal('false');
-    wrap.element.value.should.equal('');
+    var input = wrap.find('.input');
+    var label = wrap.find('.label');
+    input.exists();
+    label.exists();
+    expect(input.attributes().placeholder).to.equal(undefined);
+    expect(input.attributes().autofocus  ).to.equal(undefined);
+    input.attributes().spellcheck.should.equal('false');
+    input.classes().should.not.contain('error');
+    input.element.value.should.equal('');
   });
 
 
-  it('shows a given placeholder', () => {
-    var wrap = make({ placeholder: 'plc' });
-    wrap.attributes().placeholder.should.equal('plc');
+  it('shows a given placeholder, in a \'label\' element', () => {
+    make({ placeholder: 'plc' });
+    _labelV().should.equal('plc');
   });
 
-  it('hides a placeholder when the TheInput gets focused, and ' +
-     'puts it back on blur', () => {
-    var wrap = make({ placeholder: 'plc' });
-    wrap.attributes().placeholder.should.equal('plc');
-    wrap.trigger('focus');
-    expect(wrap.attributes().placeholder).to.equal(undefined);
-    wrap.trigger('blur');
-    wrap.attributes().placeholder.should.equal('plc');
+  it('gives the label a \'focus\' class on focus; removes it on blur', () => {
+    make({ placeholder: 'plc' });
+    _label().classes().should.not.contain('focus');
+    _input().trigger('focus');
+    _label().classes().should    .contain('focus');
+    _input().trigger('blur');
+    _label().classes().should.not.contain('focus');
   });
 
-  it('hides a placeholder when the TheInput gets clicked', () => {
-    var wrap = make({ placeholder: 'plc' });
-    wrap.attributes().placeholder.should.equal('plc');
-    ///wrap.element.click();  // =Bit shorter version of the line below.
-    wrap.trigger('click', { button: 0 });
-    expect(wrap.attributes().placeholder).to.equal(undefined);
+  it('gives the label a \'hidden\' class, only if an initialValue or ' +
+     'no placeholder is given', () => {
+    make({ placeholder: 'plc' });
+    _label().classes().should.not.contain('hidden');
+    make({ initialValue: 'abc' });
+    _label().classes().should.contain('hidden');
+    make({ placeholder: '' });
+    _label().classes().should.contain('hidden');
+    make({ placeholder: false });
+    _label().classes().should.contain('hidden');
   });
 
-
-  it('changes the placeholder along with its prop', () => {
-    var wrap = make({ placeholder: 'plc' });
-    wrap.attributes().placeholder.should.equal('plc');
-    wrap.setProps({ placeholder: 'plc2' });
-    wrap.attributes().placeholder.should.equal('plc2');
+  it('gives the label a \'hidden\' class, if the input is not empty, ' +
+     'but not if it is empty', () => {
+    make({ placeholder: 'plc' });
+    _input().element.value = 'a';  _input().trigger('input');
+    _label().classes().should.contain('hidden');
+    _input().element.value = '';   _input().trigger('input');
+    _label().classes().should.not.contain('hidden');
   });
 
-
-  it('changes the placeholder, also if its prop is changed while TheInput is ' +
-     'focused', () => {
-    var wrap = make({ placeholder: 'plc' });
-    wrap.attributes().placeholder.should.equal('plc');
-
-    wrap.trigger('focus');
-    expect(wrap.attributes().placeholder).to.equal(undefined);
-
-    wrap.setProps({ placeholder: 'plc2' });
-    expect(wrap.attributes().placeholder).to.equal(undefined);
-
-    wrap.trigger('blur');
-    wrap.attributes().placeholder.should.equal('plc2');
+  it('changes the placeholder label along with its prop', () => {
+    make({ placeholder: 'plc' });
+    _labelV().should.equal('plc');
+    w.setProps({ placeholder: 'plc2' });
+    _labelV().should.equal('plc2');
   });
 
 
   it('can autofocus', () => {
-    var wrap = make({ autofocus: true });
-    wrap.attributes().autofocus.should.not.equal(undefined);
+    make({ autofocus: true });
+    _inputA().autofocus.should.not.equal(undefined);
     //// (Note: this doesn't work, can't be tested) :
-    //setTimeout(() => {     D(wrap.emitted('focus'));
-    //  Vue.nextTick(() => { D(wrap.emitted('focus')); cb() });  }, 100);
+    //setTimeout(() => {     D(w.emitted('focus'));
+    //  Vue.nextTick(() => { D(w.emitted('focus')); cb() });  }, 100);
   });
 
 
   it('can add an error-indicating CSS class', () => {
-    var wrap = make({ showError: true });
-    wrap.classes().should.contain('error');
+    make({ showError: true });
+    _input().classes().should.contain('error');
   });
 
 
   it('shows a given initial input-value', () => {
-    var wrap = make({ value: 'abc' });
-    wrap.element.value.should.equal('abc');
+    make({ value: 'abc' });
+    _input().element.value.should.equal('abc');
   });
 
   it('puts the cursor at the end of the input, on a focus event', cb => {
-    var wrap = make({ value: 'abc' });
-    wrap.element.selectionStart = 0;  // } Put cursor at start of <input>.
-    wrap.element.selectionEnd = 0;    // }
-    wrap.trigger('focus');
+    make({ value: 'abc' });
+    _input().element.selectionStart = 0;  // } Put cursor at start of <input>.
+    _input().element.selectionEnd = 0;    // }
+    _input().trigger('focus');
     setTimeout(() => {  // (Short timeout is required for browsers to respond).
-      wrap.element.selectionStart.should.equal(3);  // `3 == 'abc'.length`.
-      wrap.element.selectionEnd  .should.equal(3);
+      _input().element.selectionStart.should.equal(3);  // `3 == 'abc'.length`.
+      _input().element.selectionEnd  .should.equal(3);
       cb();
     }, 1);
   });
 
   it('changes its model `str` when receiving an input event (from <input>), ' +
      'and emits an input event itself', () => {
-    var wrap = make({});
-    wrap.element.value = 'a';  // } Set the <input>'s content, ..
-    wrap.trigger('input');     // } ..and notify TheInput.
-    wrap.vm.str.should.equal('a');
-    wrap.emitted('input')[0][0].should.equal('a'); // (=first emit's first arg).
+    make({});
+    _input().element.value = 'a';  // } Set the <input>'s content, ..
+    _input().trigger('input');     // } ..and notify TheInput.
+    w.vm.str.should.equal('a');
+    Vue.nextTick(() => {
+      w.emitted('input')[0][0].should.equal('a'); // (=first emit's first arg).
+    });
   });
 
 
   it('emits focus and blur events', () => {
-    var wrap = make({});
-    wrap.trigger('focus');
-    wrap.emitted('focus').should.not.equal(undefined);
-    wrap.trigger('blur' );
-    wrap.emitted('blur' ).should.not.equal(undefined);
+    make({});
+    _input().trigger('focus');
+    w.emitted('focus').should.not.equal(undefined);
+    _input().trigger('blur' );
+    w.emitted('blur' ).should.not.equal(undefined);
   });
 
   it('emits a doubleclick event', () => {
-    var wrap = make({});
+    make({});
     // Since 'vue-test-utils' can't dblclick, we must make the Event manually:
-    wrap.element.dispatchEvent(new MouseEvent('dblclick'));
-    wrap.emitted('dblclick').should.not.equal(undefined);
+    _input().element.dispatchEvent(new MouseEvent('dblclick'));
+    w.emitted('dblclick').should.not.equal(undefined);
   });
 
 
   it('emits events for keys: up, down, esc, enter, bksp, tab, ' +
      'shift+tab, ctrl+enter, shift+enter', () => {
-    var wrap = make({});
+    make({});
 
-    wrap.trigger('keydown.up');
-    wrap.trigger('keydown.down');
-    wrap.trigger('keydown.esc');
-    wrap.trigger('keydown.enter');
-    wrap.trigger('keydown.backspace');
-    wrap.trigger('keydown.tab');
-    wrap.trigger('keydown.tab',   { shiftKey: true });
-    wrap.trigger('keydown.enter', { ctrlKey: true });
-    wrap.trigger('keydown.enter', { shiftKey: true });
+    _input().trigger('keydown.up');
+    _input().trigger('keydown.down');
+    _input().trigger('keydown.esc');
+    _input().trigger('keydown.enter');
+    _input().trigger('keydown.backspace');
+    _input().trigger('keydown.tab');
+    _input().trigger('keydown.tab',   { shiftKey: true });
+    _input().trigger('keydown.enter', { ctrlKey: true });
+    _input().trigger('keydown.enter', { shiftKey: true });
 
-    wrap.emittedByOrder().map(
+    w.emittedByOrder().map(
       e => e.name == 'key-tab' ? [e.name, e.args[0]] : e.name
     ).should.deep.equal([
       'key-up',
@@ -160,52 +167,52 @@ describe('sub/TheInput', () => {
     ]);
 
     // Shallow-test that key-bksp/tab emit an `event` Object too.
-    wrap.emitted('key-bksp')[0].length.should.equal(1);  // 1: one argument,
-    wrap.emitted('key-tab' )[0].length.should.equal(2);  // [0]: 1st emit.
-    wrap.emitted('key-tab' )[1].length.should.equal(2);  // [1]: 2nd emit.
+    w.emitted('key-bksp')[0].length.should.equal(1);  // 1: one argument,
+    w.emitted('key-tab' )[0].length.should.equal(2);  // [0]: 1st emit.
+    w.emitted('key-tab' )[1].length.should.equal(2);  // [1]: 2nd emit.
   });
 
 
   it('responds to *left* clicks, *without modifier keys* only', () => {
-    var wrap = make({});
+    make({});
     // Let's test all combinations just for fun.
-    wrap.trigger('click', { button: 0, shiftKey: true });
-    wrap.trigger('click', { button: 0, ctrlKey: true });
-    wrap.trigger('click', { button: 0, altKey: true });
-    wrap.trigger('click', { button: 0, shiftKey: true, ctrlKey: true });
-    wrap.trigger('click', { button: 0, shiftKey: true, altKey: true });
-    wrap.trigger('click', { button: 0, ctrlKey: true, altKey: true });
-    wrap.trigger('click', { button: 0, shiftKey:true, ctrlKey:true, altKey:true});
-    wrap.trigger('click', { button: 2 });
-    wrap.trigger('click', { button: 2, shiftKey: true });
-    wrap.trigger('click', { button: 2, ctrlKey: true });
-    wrap.trigger('click', { button: 2, altKey: true });
-    wrap.trigger('click', { button: 2, shiftKey: true, ctrlKey: true });
-    wrap.trigger('click', { button: 2, shiftKey: true, altKey: true });
-    wrap.trigger('click', { button: 2, ctrlKey: true, altKey: true });
-    wrap.trigger('click', { button: 2, shiftKey:true, ctrlKey:true, altKey:true});
-    wrap.emittedByOrder().should.deep.equal([]);
-    wrap.trigger('click', { button: 0 });
-    wrap.emittedByOrder().should.deep.equal([ { name: 'click', args: [] } ]);
+    _input().trigger('click', { button: 0, shiftKey: true });
+    _input().trigger('click', { button: 0, ctrlKey: true });
+    _input().trigger('click', { button: 0, altKey: true });
+    _input().trigger('click', { button: 0, shiftKey: true, ctrlKey: true });
+    _input().trigger('click', { button: 0, shiftKey: true, altKey: true });
+    _input().trigger('click', { button: 0, ctrlKey: true, altKey: true });
+    _input().trigger('click', { button: 0, shiftKey:true, ctrlKey:true, altKey:true});
+    _input().trigger('click', { button: 2 });
+    _input().trigger('click', { button: 2, shiftKey: true });
+    _input().trigger('click', { button: 2, ctrlKey: true });
+    _input().trigger('click', { button: 2, altKey: true });
+    _input().trigger('click', { button: 2, shiftKey: true, ctrlKey: true });
+    _input().trigger('click', { button: 2, shiftKey: true, altKey: true });
+    _input().trigger('click', { button: 2, ctrlKey: true, altKey: true });
+    _input().trigger('click', { button: 2, shiftKey:true, ctrlKey:true, altKey:true});
+    w.emittedByOrder().should.deep.equal([]);
+    _input().trigger('click', { button: 0 });
+    w.emittedByOrder().should.deep.equal([ { name: 'click', args: [] } ]);
   });
 
 
   it('calls `preventDefault()` on Esc-press (this makes it not lose ' +
      'focus in some browsers)', () => {
-    var wrap = make({});
+    make({});
     var called = 0;
-    wrap.trigger('keydown.esc', { preventDefault: () => called = 1 });
+    _input().trigger('keydown.esc', { preventDefault: () => called = 1 });
     called.should.equal(1); // Can only test this, not that browser doesn't blur.
   });
 
   it('does not call `preventDefault()` on Tab or Shift+Tab (this allows ' +
      'the parent component do decide whether to call it or not)', () => {
-    var wrap = make({});
+    make({});
     var c = 0;
-    wrap.trigger('keydown.tab', { preventDefault: () => c = 1 });
-    wrap.trigger('keydown.tab', { preventDefault: () => c = 1, shiftKey: true });
+    _input().trigger('keydown.tab', { preventDefault: () => c = 1 });
+    _input().trigger('keydown.tab', { preventDefault: () => c = 1, shiftKey: true });
     c.should.equal(0);
-    wrap.trigger('keydown.esc', { preventDefault: () => c = 1 });
+    _input().trigger('keydown.esc', { preventDefault: () => c = 1 });
     c.should.equal(1);  // Just to test that this test-code works.
   });
 });

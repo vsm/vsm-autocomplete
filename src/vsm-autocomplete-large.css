@@ -7,7 +7,8 @@ element that Vue is activated on (e.g. after '<div #app>...</div>') :
   <link rel="stylesheet" href="vsm-autocomplete-large.css">
 
 */
-.vsm-autocomplete .input {
+.vsm-autocomplete .input,
+.vsm-autocomplete .label {
   font-size: 16px;
 }
 .vsm-autocomplete .list {
@@ -29,4 +30,8 @@ element that Vue is activated on (e.g. after '<div #app>...</div>') :
 }
 .vsm-autocomplete .spinner.list-closed {
   margin-top: 7px;
+}
+.vsm-autocomplete .label.focus {
+  left: 3px;
+  font-size: 10.5px;
 }

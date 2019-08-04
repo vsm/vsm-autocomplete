@@ -1,25 +1,34 @@
 <template>
-  <input
-    ref="input"
-    v-model="str"
-    :placeholder="realPlaceholder"
-    :autofocus="autofocus"
-    :class="['input', { 'error': showError }]"
-    spellcheck="false"
-    @focus="onFocus"
-    @blur="onBlur"
-    @keydown.up.exact="onKeyUp"
-    @keydown.down.exact="onKeyDown"
-    @keydown.esc.exact.prevent="onKeyEsc"
-    @keydown.enter.exact="onKeyEnter"
-    @keydown.8.exact="onKeyBksp"
-    @keydown.tab.exact="onKeyTab"
-    @keydown.tab.shift.exact="onKeyShiftTab"
-    @keydown.enter.ctrl.exact="onKeyCtrlEnter"
-    @keydown.enter.shift.exact="onKeyShiftEnter"
-    @click.left.exact="onClick"
-    @dblclick.left.exact="onDblclick"
-  >
+  <div class="input-and-label">
+    <input
+      ref="input"
+      v-model="str"
+      :autofocus="autofocus"
+      :class="['input', {
+        'error': showError
+      }]"
+      spellcheck="false"
+      @focus="onFocus"
+      @blur="onBlur"
+      @keydown.up.exact="onKeyUp"
+      @keydown.down.exact="onKeyDown"
+      @keydown.esc.exact.prevent="onKeyEsc"
+      @keydown.enter.exact="onKeyEnter"
+      @keydown.8.exact="onKeyBksp"
+      @keydown.tab.exact="onKeyTab"
+      @keydown.tab.shift.exact="onKeyShiftTab"
+      @keydown.enter.ctrl.exact="onKeyCtrlEnter"
+      @keydown.enter.shift.exact="onKeyShiftEnter"
+      @click.left.exact="onClick"
+      @dblclick.left.exact="onDblclick"
+    >
+    <span
+      :class="['label', {
+        'focus': hasFocus,
+        'hidden': !showPlaceholder
+      }]"
+    >{{ placeholder || '' }}</span>
+  </div>
 </template>
 
 
@@ -73,13 +82,13 @@ export default {
     return ({
       input: null,
       str: this.value,  // This places an initial string in '<input>'.
-      isFocused: false
+      hasFocus: false
     });
   },
 
   computed: {
-    realPlaceholder() {  // Returns `false`(=hidden) for a focused input.
-      return !this.isFocused && this.placeholder;
+    showPlaceholder() {
+      return this.placeholder && !this.str;
     }
   },
 
@@ -100,12 +109,12 @@ export default {
   methods: {
     onFocus() {
       this.cursorToEnd();
-      this.isFocused = true;
+      this.hasFocus = true;
       this.$emit('focus');
     },
 
     onBlur() {
-      this.isFocused = false;
+      this.hasFocus = false;
       this.$emit('blur');
     },
 
@@ -126,13 +135,13 @@ export default {
     onKeyShiftEnter()    { this.$emit('key-shift-enter') },
 
     onClick() {
-      this.isFocused = true;
+      this.hasFocus = true;
       this.$emit('click');
     },
 
     onDblclick() {
       this.cursorToEnd();
-      this.isFocused = true;
+      this.hasFocus = true;
       this.$emit('dblclick');
     }
   }
@@ -141,6 +150,10 @@ export default {
 
 
 <style scoped>
+  .input-and-label {
+    position: relative;
+  }
+  .input-and-label,
   .input {  /* The $-marked ones undo the automatic 'user agent stylesheets' */
     width: 100%;
     height: 100%;
@@ -154,8 +167,23 @@ export default {
     outline: none;     /* $ */
     box-shadow: none;  /* $ */
   }
-  .input::placeholder {
-    color: #777;
+  .label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #aaa;
+    pointer-events: none;
+    transition: 0.2s ease all;
+  }
+  .label.focus {
+    top: -2px;
+    left: 2px;
+    font-size: 10px;
+    color: #ccc;
+    opacity: 1;
+  }
+  .label.hidden {
+    display: none;
   }
   .error {
     background-color: #ffe8e8;
