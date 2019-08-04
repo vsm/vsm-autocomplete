@@ -1,5 +1,6 @@
 <template>
-  <div class="input-and-label">
+  <!-- eslint-disable vue/multiline-html-element-content-newline -->
+  <div class="input-wrap">
     <input
       ref="input"
       v-model="str"
@@ -23,12 +24,13 @@
       @dblclick.left.exact="onDblclick"
     >
     <span
-      :class="['label', {
+      :class="['placehold', {
         'focus': hasFocus,
         'hidden': !showPlaceholder
       }]"
     >{{ placeholder || '' }}</span>
   </div>
+  <!-- eslint-enable -->
 </template>
 
 
@@ -150,10 +152,10 @@ export default {
 
 
 <style scoped>
-  .input-and-label {
+  .input-wrap {
     position: relative;
   }
-  .input-and-label,
+  .input-wrap,
   .input {  /* The $-marked ones undo the automatic 'user agent stylesheets' */
     width: 100%;
     height: 100%;
@@ -167,7 +169,7 @@ export default {
     outline: none;     /* $ */
     box-shadow: none;  /* $ */
   }
-  .label {
+  .placehold {
     position: absolute;
     top: 0;
     left: 0;
@@ -175,14 +177,14 @@ export default {
     pointer-events: none;
     transition: 0.2s ease all;
   }
-  .label.focus {
+  .placehold.focus {
     top: -2px;
     left: 2px;
     font-size: 10px;
     color: #ccc;
     opacity: 1;
   }
-  .label.hidden {
+  .placehold.hidden {
     display: none;
   }
   .error {

@@ -8,10 +8,10 @@ describe('sub/TheInput', () => {
   // A function for creating a test-component with custom props.
   const make = props => w = shallowMount(TheInput, { propsData: props });
 
-  const _input  = () => w.find('.input');
-  const _inputA = () => _input().attributes();
-  const _label  = () => w.find('.label');
-  const _labelV = () => _label().text();
+  const _input   = () => w.find('.input');
+  const _inputA  = () => _input().attributes();
+  const _placeh  = () => w.find('.placehold');
+  const _placehV = () => _placeh().text();
 
 
   it('initializes when given no props', () => {
@@ -23,10 +23,10 @@ describe('sub/TheInput', () => {
         /// value: ''
       }
     });
-    var input = wrap.find('.input');
-    var label = wrap.find('.label');
-    input.exists();
-    label.exists();
+    var input  = wrap.find('.input');
+    var placeh = wrap.find('.placeh');
+    input .exists();
+    placeh.exists();
     expect(input.attributes().placeholder).to.equal(undefined);
     expect(input.attributes().autofocus  ).to.equal(undefined);
     input.attributes().spellcheck.should.equal('false');
@@ -35,46 +35,46 @@ describe('sub/TheInput', () => {
   });
 
 
-  it('shows a given placeholder, in a \'label\' element', () => {
+  it('shows a given placeholder, in a \'placehold\' element', () => {
     make({ placeholder: 'plc' });
-    _labelV().should.equal('plc');
+    _placehV().should.equal('plc');
   });
 
-  it('gives the label a \'focus\' class on focus; removes it on blur', () => {
+  it('gives placehold a \'focus\' class on focus; removes it on blur', () => {
     make({ placeholder: 'plc' });
-    _label().classes().should.not.contain('focus');
-    _input().trigger('focus');
-    _label().classes().should    .contain('focus');
-    _input().trigger('blur');
-    _label().classes().should.not.contain('focus');
+    _placeh().classes().should.not.contain('focus');
+    _input ().trigger('focus');
+    _placeh().classes().should    .contain('focus');
+    _input ().trigger('blur');
+    _placeh().classes().should.not.contain('focus');
   });
 
-  it('gives the label a \'hidden\' class, only if an initialValue or ' +
+  it('gives placehold a \'hidden\' class, only if an initialValue or ' +
      'no placeholder is given', () => {
     make({ placeholder: 'plc' });
-    _label().classes().should.not.contain('hidden');
+    _placeh().classes().should.not.contain('hidden');
     make({ initialValue: 'abc' });
-    _label().classes().should.contain('hidden');
+    _placeh().classes().should.contain('hidden');
     make({ placeholder: '' });
-    _label().classes().should.contain('hidden');
+    _placeh().classes().should.contain('hidden');
     make({ placeholder: false });
-    _label().classes().should.contain('hidden');
+    _placeh().classes().should.contain('hidden');
   });
 
-  it('gives the label a \'hidden\' class, if the input is not empty, ' +
+  it('gives placehold a \'hidden\' class, if the input is not empty, ' +
      'but not if it is empty', () => {
     make({ placeholder: 'plc' });
-    _input().element.value = 'a';  _input().trigger('input');
-    _label().classes().should.contain('hidden');
-    _input().element.value = '';   _input().trigger('input');
-    _label().classes().should.not.contain('hidden');
+    _input ().element.value = 'a';  _input().trigger('input');
+    _placeh().classes().should.contain('hidden');
+    _input ().element.value = '';   _input().trigger('input');
+    _placeh().classes().should.not.contain('hidden');
   });
 
-  it('changes the placeholder label along with its prop', () => {
+  it('changes the placeholder content along with its prop', () => {
     make({ placeholder: 'plc' });
-    _labelV().should.equal('plc');
+    _placehV().should.equal('plc');
     w.setProps({ placeholder: 'plc2' });
-    _labelV().should.equal('plc2');
+    _placehV().should.equal('plc2');
   });
 
 
