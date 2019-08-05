@@ -49,16 +49,19 @@ describe('sub/TheInput', () => {
     _placeh().classes().should.not.contain('focus');
   });
 
-  it('gives placehold a \'hidden\' class, only if an initialValue or ' +
-     'no placeholder is given', () => {
+  it('gives placehold a \'hidden\' class, only if a `placeholder` and ' +
+     'a `value` is given', () => {
     make({ placeholder: 'plc' });
     _placeh().classes().should.not.contain('hidden');
-    make({ initialValue: 'abc' });
-    _placeh().classes().should.contain('hidden');
+    make({ placeholder: 'plc', value: 'abc' });
+    _placeh().classes().should    .contain('hidden');
+  });
+
+  it('does not add placehold if no `placeholder` is given', () => {
     make({ placeholder: '' });
-    _placeh().classes().should.contain('hidden');
+    _placeh().exists().should.equal(false);
     make({ placeholder: false });
-    _placeh().classes().should.contain('hidden');
+    _placeh().exists().should.equal(false);
   });
 
   it('gives placehold a \'hidden\' class, if the input is not empty, ' +

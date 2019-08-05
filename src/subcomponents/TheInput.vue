@@ -24,11 +24,13 @@
       @dblclick.left.exact="onDblclick"
     >
     <span
+      v-if="placeholder"
       :class="['placehold', {
         'focus': hasFocus,
         'hidden': !showPlaceholder
       }]"
-    >{{ placeholder || '' }}</span>
+      v-text="placeholder"
+    />
   </div>
   <!-- eslint-enable -->
 </template>

@@ -96,7 +96,6 @@ describe('VsmAutocomplete', () => {
   const _inputA  = () => _input().attributes();
 
   const _placeh  = () => w.find('.placehold');
-  const _placehT = () => _placeh().text();
 
   const _list    = () => w.find('.list');
   const _listEx  = () => _list().exists();
@@ -254,9 +253,9 @@ describe('VsmAutocomplete', () => {
       //       _inputA() === w.find('.input').attributes() ;
       //       _inputV() === w.find('.input').element.value ; etc.
       expect(_inputA().autofocus).to.equal(undefined);
-      _inputV ().should.equal('');
-      _input  ().classes().should.not.contain('error');
-      _placehT().should.equal('');
+      _inputV().should.equal('');
+      _input ().classes().should.not.contain('error');
+      _placeh().exists().should.equal(false);
 
       _list   ().exists().should.equal(false);
       _spinner().exists().should.equal(false);
@@ -291,11 +290,11 @@ describe('VsmAutocomplete', () => {
 
     it('uses the `placeholder` prop', () => {
       w = make({ placeholder: false });
-      _placehT().should.equal('');
+      _placeh().exists().should.equal(false);
 
       w = make({ placeholder: 'plc' });
-      _placehT().should.equal('plc');
-      _inputV ().should.equal('');  // TheInput should stay empty.
+      _placeh().text().should.equal('plc');
+      _inputV()       .should.equal('');  // TheInput should stay empty.
     });
 
 

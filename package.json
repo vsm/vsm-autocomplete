@@ -1,6 +1,6 @@
 {
   "name": "vsm-autocomplete",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Vue-component for term+ID lookup based on a vsm-dictionary",
   "main": "src/VsmAutocomplete.vue",
   "scripts": {
