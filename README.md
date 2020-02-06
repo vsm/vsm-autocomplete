@@ -25,9 +25,10 @@ with term+ID lookup.
   - A larger Vue component. This is the use-case of
     [`vsm-box`](https://github.com/vsmjs/vsm-box).
   - A project that bundles it with a particular vsm-dictionary.  
-    E.g. one could make:
-    `vsm-autocomplete` + `vsm-dictionary-bioportal` (to-develop) + a webpack
-    [setup](https://github.com/stcruy/building-a-reusable-vue-web-component),  
+    E.g. one could make: `vsm-autocomplete` + 
+    [`vsm-dictionary-bioportal`](https://github.com/vsmjs/vsm-dictionary-bioportal) +
+    a
+    [webpack setup](https://github.com/stcruy/building-a-reusable-vue-web-component),  
     to create a standalone web-component: `vsm-autocomplete-bioportal`.
   - A full Vue application.<br><br>
 + It makes a _new HTML-tag_ available: '`<vsm-autocomplete>`', which
@@ -48,18 +49,19 @@ with term+ID lookup.
 + Terms, IDs, and styles:  
   For being useful in biological domains
   (as explained on the [VSM-pages](http://scicura.org/vsm/vsm.html)), 
-  `vsm-autocomplete` supports what `vsm-dictionary` supports too, a.o.:
-  - there can be multiple terms (synonyms) per ID. &mdash;
-    These would get shown as separate autocomplete-items
+  `vsm-autocomplete` supports what `vsm-dictionary` supports too, i.a.:
+  - There can be multiple terms (synonyms) per ID. &mdash;
+    These will get shown as separate selection-panel items
     (different terms, same ID).
-  - any term can have multiple IDs. &mdash;
-    These would get shown as separate autocomplete-items
-    (same term, different IDs). (Think e.g. of gene names).
-  - there can be "fixed terms". These are 'preferred matches' that result in
+  - Any term can have multiple IDs. &mdash;
+    These will get shown as separate selection-panel items
+    (same term, different IDs). (Think e.g. of gene names: one term/string often
+    represents multiple genes).
+  - There can be "fixed terms". These are 'preferred matches' that result in
     matching items that appear on top of the selection-panel (also for an empty
     search string).
-  - terms can include any special character (like '&beta;-carotene').
-  - terms can have some HTML-styling. E.g. italic style for human gene names,
+  - Terms can include any special character (like '&beta;-carotene').
+  - Terms can have some HTML-styling. E.g. italic style for human gene names,
     or parts in superscript for charged ions
     (see [`string-style-html`](https://github.com/vsmjs/string-style-html)).
 
