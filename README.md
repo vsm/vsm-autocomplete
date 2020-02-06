@@ -414,3 +414,10 @@ One can change the look of a `<vsm-autocomplete>` component by overriding
 its CSS-classes.  
 As an example, the following 'CSS skin' makes everything a bit larger:
 [`vsm-autocomplete-large.css`](src/vsm-autocomplete-large.css).
+
+<br>
+
+### License
+
+This project is licensed under the AGPL license - see
+[LICENSE.md](LICENSE.md).
