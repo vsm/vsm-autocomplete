@@ -502,7 +502,7 @@ export default {
       if (this.hasItemLiteral  &&  index == this.listLength - 1) {
         this.$emit('item-literal-select', this.searchStr);
       }
-      else {
+      else if (index < this.listLength) {  // (a prop could've removed item-lit).
         this.$emit('item-select', this.matches[index]);
       }
 
