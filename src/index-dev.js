@@ -171,7 +171,6 @@ function createData() {
         { id: 'CW:0056', terms: [{str: 'no'}] },
         { id: 'CW:0013', terms: [{str: 'not'}] },
         { id: 'CW:0073', terms: [{str: 'now'}] },
-        { id: 'CW:0004', terms: [{str: 'of'}] },
         { id: 'CW:0014', terms: [{str: 'on'}] },
         { id: 'CW:0035', terms: [{str: 'one'}] },
         { id: 'CW:0075', terms: [{str: 'only'}] },
@@ -184,13 +183,15 @@ function createData() {
         { id: 'CW:0055', terms: [{str: 'time'}] },
         { id: 'CW:0084', terms: [{str: 'two'}] },
         { id: 'CW:0042', terms: [{str: 'up'}] },
-        { id: 'CW:0083', terms: [{str: 'use'}] },
         { id: 'CW:0093', terms: [{str: 'want'}] },
         { id: 'CW:0090', terms: [{str: 'way'}] },
         { id: 'CW:0087', terms: [{str: 'work'}] },
         { id: 'CW:0063', terms: [{str: 'year'}, {str: 'years'}] },
         { id: 'CW:0101', descr: 'to eat',
-          terms: [{str: 'eat'}, {str: 'eats'}, {str: 'to eat'}] },
+          terms: [
+            {str: 'eat'}, {str: 'eats'}, {str: 'eating'}, {str: 'to eat'}
+          ]
+        },
         { id: 'CW:0069',  descr: 'to see',
           terms: [{str: 'see'}, {str: 'sees'}, {str: 'to see'}] },
         { id: 'CW:0028',  descr: 'to say',
@@ -201,18 +202,23 @@ function createData() {
             {str: 'chicken', style: 'i', descr: 'as in \'coward\''}
           ]
         },
+        { id: 'CW:0107', terms: [{str: 'spoon'}] },
         { id: 'CW:0108', terms: [{str: 'fork'}] },
-        { id: 'CW:0109', terms: [{str: 'burnt'}] },
+        { id: 'CW:0109', terms: [{str: 'knife'}] },
+        { id: 'CW:0214', terms: [{str: 'burnt'}] },
+        { id: 'CW:0215', terms: [{str: 'spicy'}] },
         { id: 'CW:0105', descr: 'to use', terms: [
-          {str: 'with'},
+          {str: 'with', descr: 'using'},
+          {str: 'use'},
+          {str: 'uses'},
           {str: 'using'},
           {str: 'use of'},
           {str: 'to use'}
         ]},
         { id: 'CW:0106', descr: 'to be accompanied by', terms: [
-          {str: 'with'},
+          {str: 'with', descr: 'accompanied by'},
           {str: 'accompanied by'},
-          {str: 'to be accompanied by'}
+          {str: 'is accompanied by'}
         ]},
         { id: 'CW:0020', descr: 'associated with', terms: [{str: 'at'}] },
         { id: 'CW:0007', descr: 'to be located in', terms: [
@@ -226,17 +232,17 @@ function createData() {
           terms: [{str: 'at', descr: 'happens at timepoint'}] },
         { id: 'CW:0111', descr: 'to pertain to',
           terms: [{str: 'in', descr: 'pertains to'}] },
-        { id: 'CW:0005', descr: 'List, plain collection of items',
+        { id: 'CW:0005', descr: 'a set of items',
           terms: [{str: 'and'}]
         },
-        { id: 'CW:0112', descr: 'List where item order is important',
+        { id: 'CW:0112', descr: 'a list where item order is important',
           terms: [{str: 'ordered-and', style: 'i0-8'}] },
         { id: 'CW:0002', descr: 'to be',
           terms: [
             {str: 'to be'},
             {str: 'being'},
-            {str: 'is', descr: '\'to be\', in its 3rd-person avatar'},
-            {str: 'are', descr: '\'to be\', in its plural avatar'}
+            {str: 'is', descr: 'to be, in 3rd-person form'},
+            {str: 'are', descr: 'to be, in plural form'}
           ]
         },
         { id: 'CW:0123', descr: 'belonging to', terms: [{str: 'of'}, {str: '\'s'}] },
@@ -254,43 +260,38 @@ function createData() {
         { id: 'CW:0133', terms: [{str: 'has'}] },
         { id: 'CW:0141', descr: 'being located amongst',
           terms: [{str: 'between'}, {str: 'is between'}, {str: 'are between'}] },
-        { id: 'CW:0142', descr: 'the location amongst some things',
-          terms: [{str: 'between'}]
-        },
+
       ]},
 
       { id: 'PRSNS', abbrev: 'PRS', name: 'Persons', entries: [
-        { id: 'PRS:0004', terms: [{str: 'Brown'}] },
-        { id: 'PRS:0020', terms: [{str: 'Clarke'}] },
-        { id: 'PRS:0008', terms: [{str: 'Davis'}] },
-        { id: 'PRS:0012', terms: [{str: 'Evans'}] },
-        { id: 'PRS:0016', terms: [{str: 'Green'}] },
-        { id: 'PRS:0017', terms: [{str: 'Hall'}] },
-        { id: 'PRS:0019', terms: [{str: 'Jackson'}] },
-        { id: 'PRS:0007', terms: [{str: 'Johnson'}] },
-        { id: 'PRS:0002', terms: [{str: 'Jones'}] },
-        { id: 'PRS:0015', terms: [{str: 'Roberts'}] },
-        { id: 'PRS:0009', terms: [{str: 'Robinson'}] },
-        { id: 'PRS:0001', terms: [{str: 'Smith'}] },
-        { id: 'PRS:0003', terms: [{str: 'Taylor'}] },
-        { id: 'PRS:0011', terms: [{str: 'Thompson'}] },
-        { id: 'PRS:0013', terms: [{str: 'Walker'}] },
-        { id: 'PRS:0014', terms: [{str: 'White'}] },
-        { id: 'PRS:0005', terms: [{str: 'Williams'}] },
-        { id: 'PRS:0006', terms: [{str: 'Wilson'}] },
-        { id: 'PRS:0018', terms: [{str: 'Wood'}] },
-        { id: 'PRS:0010', terms: [{str: 'Wright'}] },
-        { id: 'PRS:0501', terms: [{str: 'Alice'}] },
-        { id: 'PRS:0502', terms: [{str: 'Bob'}] },
-        { id: 'PRS:0510', terms: [{str: 'John'}],
-          descr: 'my imaginary friend John Doe in Norway' },
-        { id: 'PRS:0256', descr: 'Steven Vercruysse (Cruy), creator of VSM',
+        { id: 'PRS:0001', terms: [{str: 'Alice'}] },
+        { id: 'PRS:0002', terms: [{str: 'Bob'}] },
+        { id: 'PRS:0003', terms: [{str: 'Clara'}] },
+        { id: 'PRS:0004', terms: [{str: 'David'}] },
+        { id: 'PRS:0005', terms: [{str: 'Eve'}] },
+        { id: 'PRS:0006', terms: [{str: 'Frank'}] },
+        { id: 'PRS:0007', terms: [{str: 'Greta'}] },
+        { id: 'PRS:0008', terms: [{str: 'Heidi'}] },
+        { id: 'PRS:0009', terms: [{str: 'Jane'}] },
+        { id: 'PRS:0010', terms: [{str: 'John'}],
+          descr: 'example John' },
+        { id: 'PRS:0011', terms: [{str: 'Joy'}] },
+        { id: 'PRS:0012', terms: [{str: 'Robert'}] },
+        { id: 'PRS:0013', terms: [{str: 'Robin'}] },
+        { id: 'PRS:0014', terms: [{str: 'Taylor'}] },
+        { id: 'PRS:0015', terms: [{str: 'Tom'}] },
+        { id: 'PRS:0016', terms: [{str: 'Wally'}] },
+        { id: 'PRS:0017', terms: [{str: 'Walter'}] },
+        { id: 'PRS:0018', terms: [{str: 'Will'}] },
+        { id: 'PRS:0019', terms: [{str: 'William'}] },
+        { id: 'PRS:0020', terms: [{str: 'Wilson'}] },
+        { id: 'PRS:0021', descr: 'Steven Vercruysse, creator of VSM',
           terms: [{str: 'Steven'}] },
       ]},
 
-      { id: 'uri://x/BIO', name: 'Biological concepts', entries: [
+      { id: 'http://x.org/BIO', name: 'Biological concepts', entries: [
         { id:'BIO:0010', terms: [{str: 'Ca2+', style: 'u2-4'}] },
-        { id:'BIO:0011', terms: [{str: 'Na+Cl-', style: 'u2;u5'}] },
+        { id:'BIO:0011', terms: [{str: 'Na+Cl-', style: 'u2;u5'}], descr: 'dissolved salt' },
         { id:'BIO:0001', terms: [{str: 'beta-Carotene'}, {str: 'β-Carotene'}] },
         { id:'BIO:0002', descr: 'the Human gene ICER', terms: [{str: 'ICER'}] },
         { id:'BIO:0003', descr: 'the Human gene cdc2',
@@ -299,7 +300,7 @@ function createData() {
         },
         { id:'BIO:0903', descr: 'the Mouse gene cdc2', terms: [{str: 'cdc2'}] },
         { id:'BIO:0014',
-          descr: 'To activate (= the activation of) a molecule, by some actor',
+          descr: 'to activate (=activation of) a biomolecule',
           terms: [
             {str: 'activates'},
             {str: 'activation'},
