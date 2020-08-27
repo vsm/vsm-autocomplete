@@ -22,14 +22,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vsmjs/vsm-autocomplete"
+    "url": "git+https://github.com/vsm/vsm-autocomplete"
   },
   "author": "Steven Vercruysse (http://stcruy.com)",
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/vsmjs/vsm-autocomplete/issues"
+    "url": "https://github.com/vsm/vsm-autocomplete/issues"
   },
-  "homepage": "https://github.com/vsmjs/vsm-autocomplete#readme",
+  "homepage": "https://github.com/vsm/vsm-autocomplete#readme",
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.2.3",

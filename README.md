@@ -7,10 +7,10 @@
 
 `vsm-autocomplete` is a web-page component for looking up **terms** that are
 **linked to identifiers**. These are fetched from a given
-[`vsm-dictionary`](https://github.com/vsmjs/vsm-dictionary).
+[`vsm-dictionary`](https://github.com/vsm/vsm-dictionary).
 
 Its main purpose is to be a subcomponent of
-[`vsm-box`](https://github.com/vsmjs/vsm-box).
+[`vsm-box`](https://github.com/vsm/vsm-box).
 But it can also be used in other applications that need an input-field
 with term+ID lookup.
 
@@ -23,10 +23,10 @@ with term+ID lookup.
   **input field component**,
   that a web&nbsp;developer can embed inside one of these:
   - A larger Vue component. This is the use-case of
-    [`vsm-box`](https://github.com/vsmjs/vsm-box).
+    [`vsm-box`](https://github.com/vsm/vsm-box).
   - A project that bundles it with a particular vsm-dictionary.  
     E.g. one could make: `vsm-autocomplete` + 
-    [`vsm-dictionary-bioportal`](https://github.com/vsmjs/vsm-dictionary-bioportal) +
+    [`vsm-dictionary-bioportal`](https://github.com/UniBioDicts/vsm-dictionary-bioportal) +
     a
     [webpack setup](https://github.com/stcruy/building-a-reusable-vue-web-component),  
     to create a standalone web-component: `vsm-autocomplete-bioportal`.
@@ -63,7 +63,7 @@ with term+ID lookup.
   - Terms can include any special character (like '&beta;-carotene').
   - Terms can have some HTML-styling. E.g. italic style for human gene names,
     or parts in superscript for charged ions
-    (see [`string-style-html`](https://github.com/vsmjs/string-style-html)).
+    (see [`string-style-html`](https://github.com/vsm/string-style-html)).
 
 
 <br>
@@ -73,7 +73,7 @@ with term+ID lookup.
 To see an interactive demo (that uses example dictionary-data), run:
 
 ```sh
-git clone git@github.com:vsmjs/vsm-autocomplete.git
+git clone git@github.com:vsm/vsm-autocomplete.git
 cd vsm-autocomplete
 npm install
 npm start
@@ -183,7 +183,7 @@ autocomplete selection-list.
 
 | Prop                 | Type              | Required | Default | Description |
 |----------------------|-------------------|----------|---------|-------------|
-| vsm-dictionary       | Object            | true     |         | A subclass of [VsmDictionary](https://github.com/vsmjs/vsm-dictionary): an interface to a<br>provider of terms, IDs, styling info, subdictionary info, refTerms and fixedTerms |
+| vsm-dictionary       | Object            | true     |         | A subclass of [VsmDictionary](https://github.com/vsm/vsm-dictionary): an interface to a<br>provider of terms, IDs, styling info, subdictionary info, refTerms and fixedTerms |
 | autofocus            | Boolean           |          | false   | When `true`, automatically focuses the input-field at page load |
 | placeholder          | String\|Boolean   |          | false   | &bull; String: shows this placeholder message in an empty input-field \|<br>&bull; false/absent: adds none |
 | initial-value        | String            |          | ''      | The initial content for the input-field |
@@ -331,7 +331,7 @@ useful information for building a custom ListItem:
 - `data`: {Object}:
   - `item`: the complete 'match'-object that this ListItem represents.
     (The 'match' data-type is described in VsmDictionary's
-    [spec](https://github.com/vsmjs/vsm-dictionary/blob/master/Dictionary.spec.md)).
+    [spec](https://github.com/vsm/vsm-dictionary/blob/master/Dictionary.spec.md)).
   - `searchStr`: the string that the user typed to find this match.
   - `maxStringLengths`: the `max-string-lengths` prop that was set
     on this `<vsm-autocomplete>`.
